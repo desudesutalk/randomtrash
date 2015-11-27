@@ -7,6 +7,7 @@
 // @include      *://*syn-ch.org/*
 // @include      *://*syn-ch.ru/*
 // @include      *://*syn-ch.com.ua/*
+// @updateURL    https://github.com/desudesutalk/randomtrash/raw/master/tripwars/tripwars.user.js
 // @copyright    2015+, me
 // @run-at       document-end
 // ==/UserScript==
