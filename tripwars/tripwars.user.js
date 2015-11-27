@@ -230,7 +230,7 @@ function renderTripGame(){
 				(t>1? 'x'+t : '') +'</span>';
 		}
 		if(t > 9){
-			shkvarki = '<span class="fr">КУДАХ</span>';
+			shkvarki = '<span class="fr"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAD1BMVEUAAAAAAAAnKQD/AADz/wCPxeqtAAAAAXRSTlMAQObYZgAAADZJREFUCNdjYMAGBKA0oyGMYQwVEjY2hDGgQoKCghCGkJISjKECFxGEMYQFYAxDqC5BASw2AwAbAQRmB+kZqAAAAABJRU5ErkJggg== title="КУДАХ" alt="КУДАХ"></span>';
 		}
 
 		if(i == 0){
