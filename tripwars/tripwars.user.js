@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.3
+// @version      0.0.4
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -67,6 +67,11 @@ function odometer() {
 	};
 }
 
+function updateOdometer(){
+	var spd = odometer();
+	$('#odometer').text('Speed: ' + spd.speed + 'pph (' + spd.percent + '%) Autosage in: ' + spd.timeToBL);
+}
+
 var tgStats = {},
 	tgPostHits = {};
 
@@ -97,25 +102,26 @@ function parsePostResults(p){
 		pid = p.id.replace('reply_', ''),
 		hits = [], rnd, i, j, r, m, t, atck, tCost;
 
-	if(!trip) return null;	
+	if(!trip) return null;
+	trip = trip.textContent.substring(0,12);
+	name = name.textContent;
+
+	if(!tgPostHits[pid]){
+		tgPostHits[pid] = {from: trip, hits:{}}
+	}else{
+		return false;
+	}
 
 	if(file) {
 		m = file.textContent.match(/\d+\-([0-9a-f]+)\./);
 		rnd = parseInt(m[1], 16);
 	}
 
-	trip = trip.textContent.substring(0,12);
-	name = name.textContent;
-
 	if(!tgStats[trip]){
 		tgStats[trip] = {name: name, trip: trip, energy: 1, shkvarki: {}, title: null}
 	}else{
         tgStats[trip].energy++;
     }
-
-	if(!tgPostHits[pid]){
-		tgPostHits[pid] = {from: trip, hits:{}}
-	}
 	
 	for (i = 0; i < spoils.length; i++) {
 		m = spoils[i].textContent.match(/^([astf])(:([a-z0-9а-я\-\s]{0,30}))?:(!{1,2}.+)$/i);
@@ -123,7 +129,7 @@ function parsePostResults(p){
 		if(m[4] == trip) break;
 
 		if(file && m[1].toUpperCase() == 'A' && tgStats[trip].energy > 5 && tgStats[m[4]]){
-			atck = Math.round(((rnd & 255) / 255) * 60 - 10);
+			atck = Math.round(((rnd & 255) / 255) * 55 - 5);
 			tgStats[trip].energy -= 5;
 			if(atck < 0){
 				tgStats[trip].energy += atck;
@@ -167,32 +173,26 @@ function parsePostResults(p){
 		tgPostHits[t].hits[trip] = true;
 		tgStats[tgPostHits[t].from].energy += 5;
 	}
+	return true;
 }
 
-function initTripGame(){
+function parseTripGame(){
 	var posts = document.querySelectorAll('form div.post.reply'),
 		i;
-	
-	tgStats = {};
-	tgPostHits = {};
 
 	for (i = 0; i < posts.length && i < 500; i++) {
 		parsePostResults(posts[i]);
 	}
 
 	renderTripGame();
-    $('#tripwars').on('click', function(e){
-        if(e.target.nodeName != 'A') return false;
-        if(e.target.textContent == 'A'){
-            $('form textarea#body').val($('form textarea#body').val() + '\n[h]A:'+e.target.parentNode.parentNode.dataset.trip+'[/h]');
-        }
-        if(e.target.textContent == 'S'){
-            $('form textarea#body').val($('form textarea#body').val() + '\n[h]S:'+e.target.parentNode.parentNode.dataset.trip+'[/h]');
-        }
-        if(e.target.textContent == 'T'){
-            $('form textarea#body').val($('form textarea#body').val() + '\n[h]T:'+prompt('Звание: ').substring(0,30)+':'+e.target.parentNode.parentNode.dataset.trip+'[/h]');
-        }
-    });
+
+	if(posts.length > 500){
+		if(!localStorage.twBaseThread || curThread > localStorage.twBaseThread){
+			localStorage.twBaseThread = curThread;
+			localStorage.twBaseStats = JSON.stringify(tgStats);
+			console.log('stats saved');
+		}
+	}
 }
 
 function renderTripGame(){
@@ -249,35 +249,77 @@ function renderTripGame(){
 		tgStats[pleers[i].trip].prev = pleers[i].energy;
 	}
 }
+var tbEvents = false,
+	scanTimer;
+
+function twScanner(){
+	clearTimeout(scanTimer);
+
+	scanTimer = setTimeout(function(){
+		parseTripGame();
+		updateOdometer();		
+	}, 500);	
+}
+
+function postInserted(){
+	if(tbEvents) return true;
+	
+	twScanner();
+	return true;
+}
+
+var curThread;
 
 $(function(){
 	if (window.location.pathname.match(/\/\w+\/res\/[0-9\+]+\.html/)) {
 		$(document).on('new_post', function(e, b){
-			var i,
-				posts = document.querySelectorAll('form div.post.reply');
-				if(posts.length > 500){
-					renderTripGame();
-					return true;
-				}
-
-			for (i = 0; i < b.length; i++) {
-				parsePostResults(b[i]);
-			}
-			renderTripGame();
+			tbEvents = true;
+			twScanner();
 			return true;
 		});
+
+		var m = window.location.pathname.match(/\/\w+\/res\/([0-9\+]+)\.html/);
+		curThread = parseInt(m[1]);
+		console.log(curThread);
+
+		if(localStorage.twBaseThread && curThread > localStorage.twBaseThread){
+			tgStats = JSON.parse(localStorage.twBaseStats);
+			console.log('stats loaded');
+		}
+
 		$('body').append('<div id="tripwars"><span id="twCollapser">#</span> <span id="odometer" style="float: right;"></span><div id="twContent"></div></div>');
 		$('head').append('<style type="text/css">   #tripwars { max-height: 90%; overflow-y: auto; min-width: 300px; position: fixed; top: 15px; right: 30px; background: #fff; padding: 5px; font-size: 12px; border-radius: 3px; box-shadow: 0px 0px 10px rgba(0,0,0,0.25); counter-reset: pstn; } #twContent div:before { counter-increment: pstn; content: counter(pstn) ": "; } #twContent div { padding: 5px; border-bottom: 1px solid #eee; position: relative; } #tripwars span.fr{ float: right; margin-left: 5px; } #twContent div:hover span.fr{ visibility: hidden; } #twContent div:hover span.ctrls{ display: block; position: absolute; right: 0; top: 0; margin-top: auto; margin-bottom: auto; bottom: 0; height: 12px; } #twContent div span.ctrls{ display: none; } #tripwars span.badge{ color: white; background: #3db; padding: 3px; border-radius: 10px; } #tripwars br{ clear: both; } .twShowLess div { display:none; } .twShowLess .first-child { display:block; } #twCollapser {cursor: pointer;}</style>');
-		$('#twCollapser').on('click', function(){$('#twContent').toggleClass('twShowLess')})
-		initTripGame();
+		$('#twCollapser').on('click', function(){$('#twContent').toggleClass('twShowLess')});
+	    $('#tripwars').on('click', function(e){
+	    	var cmd = e.target.textContent, title;
+	        if(e.target.nodeName != 'A') return false;
+
+	        var trip = e.target.parentNode.parentNode.dataset.trip;
+
+	        if(cmd == 'A'){
+	            $('form textarea#body').val($('form textarea#body').val() + '\n[h]A:'+trip+'[/h]');
+	        }
+	        if(cmd == 'S'){
+	            $('form textarea#body').val($('form textarea#body').val() + '\n[h]S:'+trip+'[/h]');
+	        }
+	        if(cmd == 'T'){
+	        	title = prompt('Звание (30 символов, русские и английские буквы, цифры, пробел и минус): ').replace(/[^a-z0-9а-я\-\s]/ig, '').substring(0,30);
+	            $('form textarea#body').val($('form textarea#body').val() + '\n[h]T:'+title.substring(0,30)+':'+trip+'[/h]');
+	        }
+	    });
+
+		parseTripGame();
 		
 		// Odometer
-		function updateOdometer(){
-			var spd = odometer();
-			$('#odometer').text('Speed: ' + spd.speed + 'pph (' + spd.percent + '%) Autosage in: ' + spd.timeToBL);
-		}
 		setInterval(updateOdometer, 15000);
 		updateOdometer();
-        $(document).on('new_post', updateOdometer);
+
+        //InsertAnimation watcher
+        var insertAnimation = ' twNInsrt {from{clip:rect(1px,auto,auto,auto);}to{clip:rect(0px,auto,auto,auto);}}',
+        	animationTrigger = '{animation-duration:0.001s;-o-animation-duration:0.001s;-ms-animation-duration:0.001s;-moz-animation-duration:0.001s;-webkit-animation-duration:0.001s;animation-name:twNInsrt;-o-animation-name:twNInsrt;-ms-animation-name:twNInsrt;-moz-animation-name:twNInsrt;-webkit-animation-name:twNInsrt;}';
+    	$('<style type="text/css">@keyframes ' + insertAnimation + '@-moz-keyframes ' + insertAnimation + '@-webkit-keyframes ' +
+        	insertAnimation + '@-ms-keyframes ' + insertAnimation + '@-o-keyframes ' + insertAnimation +
+        	' .reply .body ' + animationTrigger + '</style>').appendTo('head');
+    	$(document).bind('animationstart', postInserted).bind('MSAnimationStart', postInserted).bind('webkitAnimationStart', postInserted);
 	}
 });
