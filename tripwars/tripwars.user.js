@@ -71,6 +71,7 @@ var tgStats = {},
 	tgPostHits = {};
 
 function killTrip(trip){
+	if(tgStats[trip].energy > 0) return true;
 	tgStats[trip].energy = 0;
 	tgStats[trip].shkvarki = {};
 	tgStats[trip].title = null;
