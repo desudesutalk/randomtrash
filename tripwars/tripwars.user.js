@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.5
+// @version      0.0.6
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -69,7 +69,13 @@ function odometer() {
 
 function updateOdometer(){
 	var spd = odometer();
-	$('#odometer').text('Speed: ' + spd.speed + 'pph (' + spd.percent + '%) Autosage in: ' + spd.timeToBL);
+	$('#odometer').empty();
+	if(spd.timeToBL == 'NOW!'){
+		$('#odometer').append('<strong style="color: red;">Speed: ' + spd.speed + 'pph (' + spd.percent + '%) AUTOSAGE!!!</strong>');
+	}else{
+		$('#odometer').append('<span>Speed: ' + spd.speed + 'pph (' + spd.percent + '%) Autosage in: ' + spd.timeToBL+'</span>');
+	}
+	
 }
 
 var tgStats = {},
