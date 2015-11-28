@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.7
+// @version      0.0.8
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -169,16 +169,15 @@ function parsePostResults(p){
 
 		break;
 	}
-	if(tgStats[trip].energy > 50){
-		for (i = 0; i < refs.length; i++) {
-			m = refs[i].textContent.match(/>>(\d+)/);
-			if(!m) continue;
-			t = m[1];
 
-			if(!tgPostHits[t] || tgPostHits[t].from == trip || tgPostHits[t].hits[trip]) continue;
-			tgPostHits[t].hits[trip] = true;
-			tgStats[tgPostHits[t].from].energy += 5;
-		}
+	for (i = 0; i < refs.length; i++) {
+		m = refs[i].textContent.match(/>>(\d+)/);
+		if(!m) continue;
+		t = m[1];
+
+		if(!tgPostHits[t] || tgPostHits[t].from == trip || tgPostHits[t].hits[trip]) continue;
+		tgPostHits[t].hits[trip] = true;
+		tgStats[tgPostHits[t].from].energy += tgStats[trip].energy > 50 ? 5 : 1;
 	}
 	return true;
 }
