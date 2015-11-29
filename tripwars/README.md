@@ -2,7 +2,9 @@
 
 Скрипт предназначен для [синча](http://syn-ch.com/). Работает как с куклоскриптом, так и без него.
 
-**[Установить](https://github.com/desudesutalk/randomtrash/raw/master/tripwars/tripwars.user.js)**
+Это пользовательский скрипт, для его работы потребуется [Greasemonkey](https://addons.mozilla.org/ru/firefox/addon/greasemonkey/) в Фаерфоксе или [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=ru) в Гугл Хроме.
+
+**[Установить скрипт](https://github.com/desudesutalk/randomtrash/raw/master/tripwars/tripwars.user.js)**
 
 ##Как это работает
 
