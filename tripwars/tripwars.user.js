@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.11
+// @version      0.0.12
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -116,6 +116,7 @@ function parsePostResults(p){
 		tgStats[trip] = {name: name, trip: trip, energy: 1, shkvarki: {}, title: null}
 	}else{
 		tgStats[trip].energy++;
+		tgStats[trip].name = name;
 	}
 	
 	for (i = 0; i < spoils.length; i++) {
