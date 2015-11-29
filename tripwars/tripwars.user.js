@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.8
+// @version      0.0.9
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -87,7 +87,7 @@ function killTrip(trip){
 	tgStats[trip].shkvarki = {};
 	tgStats[trip].title = null;
 
-	for (var property in tgStats) {
+/*	for (var property in tgStats) {
 		if (tgStats.hasOwnProperty(property)) {
 			tgStats[property].shkvarki[trip] = undefined;
 			delete tgStats[property].shkvarki[trip]
@@ -96,7 +96,7 @@ function killTrip(trip){
 				tgStats[property].title = null;
 			}
 		}
-	}
+	}*/
 }
 
 function parsePostResults(p){
@@ -294,7 +294,7 @@ $(function(){
 			console.log('stats loaded');
 		}
 
-		$('body').append('<div id="tripwars"><span id="twCollapser">#</span> <span id="twConf">@</span> <span id="odometer" style="float: right;"></span><div id="twContent"></div><div id="twConfig"><textarea id="twConfArea"></textarea><br/><button id="twApplyConf">применить</button></div></div>');
+		$('body').append('<div id="tripwars"><span id="twCollapser"><i class="fa fa-minus-square"></i></span> <span id="twConf"><i class="fa fa-cog"></i></span> <span id="odometer" style="float: right;"></span><div id="twContent"></div><div id="twConfig"><strong>TripWars</strong> v'+(typeof GM_info !== 'undefined' ? GM_info.script.version : GM_getMetadata("version"))+'<br><textarea id="twConfArea"></textarea><br/><button id="twApplyConf">применить</button></div></div>');
 		$('head').append('<style type="text/css">   #tripwars { max-height: 90%; overflow-y: auto; min-width: 400px; position: fixed; top: 15px; right: 30px; background: #fff; padding: 5px; font-size: 12px; border-radius: 3px; box-shadow: 0px 0px 10px rgba(0,0,0,0.25); counter-reset: pstn; } #twContent div:before { counter-increment: pstn; content: counter(pstn) ": "; } #twContent div { padding: 5px; border-bottom: 1px solid #eee; position: relative; } #tripwars span.fr{ float: right; margin-left: 5px; } #twContent div:hover span.fr{ visibility: hidden; } #twContent div:hover span.ctrls{ display: block; position: absolute; right: 0; top: 0; margin-top: auto; margin-bottom: auto; bottom: 0; height: 12px; } #twContent div span.ctrls{ display: none; } #tripwars span.badge{ color: white; background: #3db; padding: 3px; border-radius: 10px; } #tripwars br{ clear: both; } .twShowLess div { display:none; } .twShowLess .first-child { display:block; } #twCollapser, #twConf {cursor: pointer;} .twShowConfig #twContent {display: none;} #twConfig {display:none;} .twShowConfig #twConfig {display: block;} #twConfig textarea {margin: 0 !important; width: 400px; resize: vertical; min-height:400px;}</style>');
 		$('#twCollapser').on('click', function(){$('#twContent').toggleClass('twShowLess')});
 		$('#twConf').on('click', function(){$('#tripwars').toggleClass('twShowConfig')});
