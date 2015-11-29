@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.10
+// @version      0.0.11
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -156,6 +156,11 @@ function parsePostResults(p){
 			tgStats[trip].energy -= tCost;
 		}
 
+		if(m[1].toUpperCase() == 'F' && tgStats[trip].energy >= 50 && tgStats[m[4]]){
+			tgStats[trip].energy -= 30;
+			tgStats[m[4]].energy += 25;
+		}
+
 		break;
 	}
 
@@ -240,7 +245,7 @@ function renderTripGame(){
 			'<span class="fr badge"><strong>'+pleers[i].energy+'</strong></span>'+
 			'<span class="fr">'+difTxt+'</span>'+
 			shkvarki+
-			'<span class="ctrls">[<a href="javascript:;" title="пульнуть">A</a>]&nbsp;[<a href="javascript:;" title="дать шкварку">S</a>]&nbsp;[<a href="javascript:;" title="дать титул">T</a>]</span><br>'+
+			'<span class="ctrls">[<a href="javascript:;" title="пульнуть">A</a>]&nbsp;[<a href="javascript:;" title="дать шкварку">S</a>]&nbsp;[<a href="javascript:;" title="дать титул">T</a>]&nbsp;[<a href="javascript:;" title="покормить">F</a>]</span><br>'+
 			'</div>');
 		tgStats[pleers[i].trip].prev = pleers[i].energy;
 	}
@@ -302,6 +307,9 @@ $(function(){
 			if(cmd == 'T'){
 				title = prompt('Звание (30 символов, русские и английские буквы, цифры, пробел и минус): ').replace(/[^a-z0-9а-я\-\s]/ig, '').substring(0,30);
 				$('form textarea#body').val($('form textarea#body').val() + '\n[h]T:'+title.substring(0,30)+':'+trip+'[/h]');
+			}
+			if(cmd == 'F'){
+				$('form textarea#body').val($('form textarea#body').val() + '\n[h]F:'+trip+'[/h]');
 			}
 		});
 
