@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.9
+// @version      0.0.10
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -47,7 +47,7 @@ function odometer() {
 		}
 		timeToBL += m + 'm';
 
-		if (secToBL < 0) {
+		if (secToBL <= 0) {
 			timeToBL = 'NOW!';
 		}		
 
@@ -86,17 +86,6 @@ function killTrip(trip){
 	tgStats[trip].energy = 0;
 	tgStats[trip].shkvarki = {};
 	tgStats[trip].title = null;
-
-/*	for (var property in tgStats) {
-		if (tgStats.hasOwnProperty(property)) {
-			tgStats[property].shkvarki[trip] = undefined;
-			delete tgStats[property].shkvarki[trip]
-			
-			if(tgStats[property].title && tgStats[property].title.from == trip){
-				tgStats[property].title = null;
-			}
-		}
-	}*/
 }
 
 function parsePostResults(p){
@@ -192,7 +181,7 @@ function parseTripGame(){
 
 	renderTripGame();
 
-	if(posts.length > 500){
+	if(posts.length >= 500){
 		if(!localStorage.twBaseThread || curThread > localStorage.twBaseThread){
 			localStorage.twBaseThread = curThread;
 			localStorage.twBaseStats = JSON.stringify(tgStats);
