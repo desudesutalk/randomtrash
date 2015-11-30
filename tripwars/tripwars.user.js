@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.12
+// @version      0.0.13
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -115,7 +115,9 @@ function parsePostResults(p){
 	if(!tgStats[trip]){
 		tgStats[trip] = {name: name, trip: trip, energy: 1, shkvarki: {}, title: null}
 	}else{
-		tgStats[trip].energy++;
+		if(tgStats[trip].raped != curThread){
+			tgStats[trip].energy++;
+		}
 		tgStats[trip].name = name;
 	}
 	
@@ -134,6 +136,23 @@ function parsePostResults(p){
 				tgStats[m[4]].energy -= atck;
 				killTrip(m[4]);
 			}
+		}
+
+		if(file && m[1].toUpperCase() == 'R' && tgStats[trip].energy > 100 && tgStats[m[4]]){
+			if(tgStats[trip].energy <= tgStats[m[4]].energy) continue;
+			
+			atck = (rnd & 255) / 255;
+			if(atck < 0.5){
+				t = tgStats[trip].energy;
+				tgStats[trip].energy = tgStats[m[4]].energy;
+				tgStats[m[4]].energy = t;
+				tgStats[trip].energy -= 100;
+				killTrip(trip);
+				break;
+			}
+
+			tgStats[m[4]].raped = curThread;
+			tgStats[trip].energy -= 100;
 		}
 		
 		if(m[1].toUpperCase() == 'S' && tgStats[trip].energy > 5 && tgStats[m[4]] && !tgStats[m[4]].shkvarki[trip]){
@@ -170,7 +189,7 @@ function parsePostResults(p){
 		if(!m) continue;
 		t = m[1];
 
-		if(!tgPostHits[t] || tgPostHits[t].from == trip || tgPostHits[t].hits[trip]) continue;
+		if(!tgPostHits[t] || tgPostHits[t].from == trip || tgPostHits[t].hits[trip] || tgStats[tgPostHits[t].from].raped == curThread) continue;
 		tgPostHits[t].hits[trip] = true;
 		tgStats[tgPostHits[t].from].energy += tgStats[trip].energy > 50 ? 5 : 1;
 	}
@@ -240,13 +259,16 @@ function renderTripGame(){
 			shkvarki = '<span class="fr"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwBAMAAAClLOS0AAAAFVBMVEU0AAAAAAAAEf8/NiMtX2PueUL///+0Rm5gAAAAAXRSTlMAQObYZgAAARhJREFUOMut0luqAjEMBuCOl/cJ2ncpzPuR0AUIbqCGLsD9b+IkvU0zdR4Eg4Lm88+0QWNKTfyC2YwF8wTwQaQrtQuD1P4wrAHsTNpGdgG+hel3AL+DZ60OJv5wavB8rPuCdVKO1FR/1Kt6EEuUCv0R8jBL6K1F9JFQne3Mv7dWUoR47yLn+Oa2vBlQQQwxFyLd1agNlFuuQBgSmAa2gLcC8whBEusSZVIahiFgv13uhgzRaiCAS06QBr4XL0QSqEAujCinvWhIfY7w9fBPA3HI85tU3xzTGM8pMhvwebN+gFJxBzj3GfgmNwVLC7wUuNgCznX9w5IOK7t6OVcjB+fcIksPBao4Kfn7JEjfbgpiDShYCqQv+fH/e2h063llRdsAAAAASUVORK5CYII=" style="width:25px;" title="Чак Норрис" alt="Чак Норрис"></span>';
 		}
 
-		$('#twContent').append('<div data-trip="'+pleers[i].trip+'"' + (i == 0? ' style="font-size:16px" class="first-child"':'') + '>'+ 
+		$('#twContent').append('<div data-trip="'+pleers[i].trip+'"' + 
+			(i == 0? ' style="font-size:16px"':'') + 
+			(pleers[i].raped == curThread? ' class="twRaped"':'') + 
+			'>'+ 
 			(pleers[i].title? '<em>'+pleers[i].title.title+'</em> ' : '') +
 			'<strong>' + pleers[i].name +'</strong><span style="color: #228854;">'+pleers[i].trip+'</span>'+
 			'<span class="fr badge"><strong>'+pleers[i].energy+'</strong></span>'+
 			'<span class="fr">'+difTxt+'</span>'+
 			shkvarki+
-			'<span class="ctrls">[<a href="javascript:;" title="пульнуть">A</a>]&nbsp;[<a href="javascript:;" title="дать шкварку">S</a>]&nbsp;[<a href="javascript:;" title="дать титул">T</a>]&nbsp;[<a href="javascript:;" title="покормить">F</a>]</span><br>'+
+			'<span class="ctrls">[<a href="javascript:;" title="пульнуть">A</a>]&nbsp;[<a href="javascript:;" title="дать шкварку">S</a>]&nbsp;[<a href="javascript:;" title="дать титул">T</a>]&nbsp;[<a href="javascript:;" title="покормить">F</a>]&nbsp;[<a href="javascript:;" title="RAEP!">R</a>]</span><br>'+
 			'</div>');
 		tgStats[pleers[i].trip].prev = pleers[i].energy;
 	}
@@ -290,7 +312,7 @@ $(function(){
 		}
 
 		$('body').append('<div id="tripwars"><span id="twCollapser"><i class="fa fa-minus-square"></i></span> <span id="twConf"><i class="fa fa-cog"></i></span> <span id="odometer" style="float: right;"></span><div id="twContent"></div><div id="twConfig"><strong>TripWars</strong> v'+(typeof GM_info !== 'undefined' ? GM_info.script.version : GM_getMetadata("version"))+'<br><textarea id="twConfArea"></textarea><br/><button id="twApplyConf">применить</button></div></div>');
-		$('head').append('<style type="text/css">   #tripwars { max-height: 90%; overflow-y: auto; min-width: 400px; position: fixed; top: 15px; right: 30px; background: #fff; padding: 5px; font-size: 12px; border-radius: 3px; box-shadow: 0px 0px 10px rgba(0,0,0,0.25); counter-reset: pstn; } #twContent div:before { counter-increment: pstn; content: counter(pstn) ": "; } #twContent div { padding: 5px; border-bottom: 1px solid #eee; position: relative; } #tripwars span.fr{ float: right; margin-left: 5px; } #twContent div:hover span.fr{ visibility: hidden; } #twContent div:hover span.ctrls{ display: block; position: absolute; right: 0; top: 0; margin-top: auto; margin-bottom: auto; bottom: 0; height: 12px; } #twContent div span.ctrls{ display: none; } #tripwars span.badge{ color: white; background: #3db; padding: 3px; border-radius: 10px; } #tripwars br{ clear: both; } .twShowLess div { display:none; } .twShowLess .first-child { display:block; } #twCollapser, #twConf {cursor: pointer;} .twShowConfig #twContent {display: none;} #twConfig {display:none;} .twShowConfig #twConfig {display: block;} #twConfig textarea {margin: 0 !important; width: 400px; resize: vertical; min-height:400px;}</style>');
+		$('head').append('<style type="text/css">   #tripwars { max-height: 90%; overflow-y: auto; min-width: 400px; position: fixed; top: 15px; right: 30px; background: #fff; padding: 5px; font-size: 12px; border-radius: 3px; box-shadow: 0px 0px 10px rgba(0,0,0,0.25); counter-reset: pstn; } #twContent div:before { counter-increment: pstn; content: counter(pstn) ": "; } #twContent div { padding: 5px; border-bottom: 1px solid #eee; position: relative; } #tripwars span.fr{ float: right; margin-left: 5px; } #twContent div:hover span.fr{ visibility: hidden; } #twContent div:hover span.ctrls{ display: block; position: absolute; right: 0; top: 0; margin-top: auto; margin-bottom: auto; bottom: 0; height: 12px; } #twContent div span.ctrls{ display: none; } #tripwars span.badge{ color: white; background: #3db; padding: 3px; border-radius: 10px; } #tripwars br{ clear: both; } .twShowLess div { display:none; } .twShowLess div:first-child { display:block; } #twCollapser, #twConf {cursor: pointer;} .twShowConfig #twContent {display: none;} #twConfig {display:none;} .twShowConfig #twConfig {display: block;} #twConfig textarea {margin: 0 !important; width: 400px; resize: vertical; min-height:400px;} .twRaped > span:not(.badge), .twRaped > strong, .twRaped > em {color: pink !important;}</style>');
 		$('#twCollapser').on('click', function(){$('#twContent').toggleClass('twShowLess')});
 		$('#twConf').on('click', function(){$('#tripwars').toggleClass('twShowConfig')});
 		$('#tripwars').on('click', function(e){
@@ -311,6 +333,9 @@ $(function(){
 			}
 			if(cmd == 'F'){
 				$('form textarea#body').val($('form textarea#body').val() + '\n[h]F:'+trip+'[/h]');
+			}
+			if(cmd == 'R'){
+				$('form textarea#body').val($('form textarea#body').val() + '\n[h]R:'+trip+'[/h]');
 			}
 		});
 
