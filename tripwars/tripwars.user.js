@@ -180,7 +180,6 @@ function parsePostResults(p){
 			imgSrc = m[1];
 			imgW = img.width;
 			imgH = img.height;
-			console.log(imgSrc, imgW, imgH);
 		}
 		
 	}
@@ -300,7 +299,6 @@ function parseTripGame(){
 		if(!localStorage.twBaseThread || curThread > localStorage.twBaseThread){
 			localStorage.twBaseThread = curThread;
 			localStorage.twBaseStats = JSON.stringify(tgStats);
-			console.log('stats saved');
 		}
 	}
 }
@@ -323,7 +321,6 @@ function renderTripGame(){
 	for (var i = 0; i < pleers.length; i++) {
 		playa = pleers[i];
 		if(playa.ava){
-			console.log(playa);
 			if(playa.ava.src.match(/^\/\d+\/\d+\/\d+\/\d+-[0-9a-f]+\.png$/i) && 
 				playa.ava.width <= 200 && playa.ava.height <= 200 &&
 				playa.ava.width > 0 && playa.ava.height > 0){
@@ -375,7 +372,6 @@ function renderTripGame(){
 			'</div>');
 		tgStats[pleers[i].trip].prev = pleers[i].energy;
 	}
-	console.log(avas);
 	$('head #twAvaStyle').replaceWith('<style type="text/css" id="twAvaStyle">'+avas.join(' ')+'</style>');
 }
 var tbEvents = false,
@@ -409,12 +405,10 @@ $(function(){
 
 		var m = window.location.pathname.match(/\/\w+\/(res|arch)\/([0-9\+]+)\.html/);
 		curThread = parseInt(m[2]);
-		console.log(curThread);
 
 		if(localStorage.twBaseThread && curThread > localStorage.twBaseThread){
 			tgStats = JSON.parse(localStorage.twBaseStats);
 			baseThread = localStorage.twBaseThread;
-			console.log('stats loaded');
 		}
 
 		$('body').append('<div id="tripwars"><span id="twCollapser"><i class="fa fa-minus-square"></i></span> <span id="twConf"><i class="fa fa-cog"></i></span> <span id="twHideAway"><i class="fa fa-eye"></i></span><span id="odometer" style="float: right;"></span><div id="twContent"></div><div id="twConfig"><strong>TripWars</strong> v'+(typeof GM_info !== 'undefined' ? GM_info.script.version : GM_getMetadata("version"))+'<br><textarea id="twConfArea"></textarea><br/><button id="twApplyConf">применить</button></div></div>');
