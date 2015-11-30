@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.14
+// @version      0.0.15
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -11,6 +11,69 @@
 // @copyright    2015+, me
 // @run-at       document-end
 // ==/UserScript==
+
+function bytesToHex(bytes){
+    for (var hex = [], i = 0; i < bytes.length; i++) {
+        hex.push((bytes[i] >>> 4).toString(16));
+        hex.push((bytes[i] & 0xF).toString(16));
+    }
+    return hex.join("");
+}
+
+var strToUTF8Arr = function(sDOMStr) {
+	"use strict";
+	var aBytes, nChr, nStrLen = sDOMStr.length, nArrLen = 0;
+
+	/* mapping... */
+
+	for (var nMapIdx = 0; nMapIdx < nStrLen; nMapIdx++) {
+		nChr = sDOMStr.charCodeAt(nMapIdx);
+		nArrLen += nChr < 0x80 ? 1 : nChr < 0x800 ? 2 : nChr < 0x10000 ? 3 : nChr < 0x200000 ? 4 : nChr < 0x4000000 ? 5 : 6;
+	}
+
+	aBytes = new Uint8Array(nArrLen);
+
+	/* transcription... */
+
+	for (var nIdx = 0, nChrIdx = 0; nIdx < nArrLen; nChrIdx++) {
+		nChr = sDOMStr.charCodeAt(nChrIdx);
+		if (nChr < 128) {
+			/* one byte */
+			aBytes[nIdx++] = nChr;
+		} else if (nChr < 0x800) {
+			/* two bytes */
+			aBytes[nIdx++] = 192 + (nChr >>> 6);
+			aBytes[nIdx++] = 128 + (nChr & 63);
+		} else if (nChr < 0x10000) {
+			/* three bytes */
+			aBytes[nIdx++] = 224 + (nChr >>> 12);
+			aBytes[nIdx++] = 128 + (nChr >>> 6 & 63);
+			aBytes[nIdx++] = 128 + (nChr & 63);
+		} else if (nChr < 0x200000) {
+			/* four bytes */
+			aBytes[nIdx++] = 240 + (nChr >>> 18);
+			aBytes[nIdx++] = 128 + (nChr >>> 12 & 63);
+			aBytes[nIdx++] = 128 + (nChr >>> 6 & 63);
+			aBytes[nIdx++] = 128 + (nChr & 63);
+		} else if (nChr < 0x4000000) {
+			/* five bytes */
+			aBytes[nIdx++] = 248 + (nChr >>> 24);
+			aBytes[nIdx++] = 128 + (nChr >>> 18 & 63);
+			aBytes[nIdx++] = 128 + (nChr >>> 12 & 63);
+			aBytes[nIdx++] = 128 + (nChr >>> 6 & 63);
+			aBytes[nIdx++] = 128 + (nChr & 63);
+		} else /* if (nChr <= 0x7fffffff) */ {
+			/* six bytes */
+			aBytes[nIdx++] = 252 + /* (nChr >>> 32) is not possible in ECMAScript! So...: */ (nChr / 1073741824);
+			aBytes[nIdx++] = 128 + (nChr >>> 24 & 63);
+			aBytes[nIdx++] = 128 + (nChr >>> 18 & 63);
+			aBytes[nIdx++] = 128 + (nChr >>> 12 & 63);
+			aBytes[nIdx++] = 128 + (nChr >>> 6 & 63);
+			aBytes[nIdx++] = 128 + (nChr & 63);
+		}
+	}
+	return aBytes;
+};
 
 function odometer() {
 	var posts = document.querySelectorAll('form div.post.reply'),
@@ -86,6 +149,7 @@ function killTrip(trip){
 	tgStats[trip].energy = 0;
 	tgStats[trip].shkvarki = {};
 	tgStats[trip].title = null;
+	tgStats[trip].ava = null;
 }
 
 function parsePostResults(p){
@@ -94,6 +158,7 @@ function parsePostResults(p){
 		refs = p.querySelectorAll('div.body a[onclick^=highlightReply]'),
 		name = p.querySelector('.intro span.name'),
 		spoils = p.querySelectorAll('div.body span.spoiler'),
+		img = p.querySelector('img.post-image'), imgSrc, imgW, imgH,
 		pid = p.id.replace('reply_', ''),
 		hits = [], rnd, i, j, r, m, t, atck, tCost;
 
@@ -105,6 +170,19 @@ function parsePostResults(p){
 		tgPostHits[pid] = {from: trip, hits:{}}
 	}else{
 		return false;
+	}
+
+	p.classList.add('tw-' + bytesToHex(strToUTF8Arr(trip)));
+
+	if(img){
+		m = img.src.match(/thumb(\/\d+\/\d+\/\d+\/\d+-[0-9a-f]+\.png$)/i);
+		if(m){
+			imgSrc = m[1];
+			imgW = img.width;
+			imgH = img.height;
+			console.log(imgSrc, imgW, imgH);
+		}
+		
 	}
 
 	if(file) {
@@ -120,9 +198,11 @@ function parsePostResults(p){
 		}
 		tgStats[trip].name = name;
 	}
+
+	tgStats[trip].lastThread = curThread;
 	
 	for (i = 0; i < spoils.length; i++) {
-		m = spoils[i].textContent.match(/^([astfr])(:([a-z0-9а-я\-\s]{0,30}))?:(!{1,2}.+)$/i);
+		m = spoils[i].textContent.match(/^([a-z0-9])(:([a-z0-9а-я\-\s]{0,30}))?:(!{1,2}.+)$/i);
 		if(!m) continue;
 		if(m[4] == trip) break;
 
@@ -181,6 +261,16 @@ function parsePostResults(p){
 			tgStats[m[4]].energy += 25;
 		}
 
+		if(imgSrc && m[1].toUpperCase() == 'I' && tgStats[trip].energy > 250 && tgStats[m[4]]){
+			tgStats[trip].energy -= 250;
+			tgStats[m[4]].ava = {
+				from: trip,
+				src: imgSrc,
+				width: imgW,
+				height: imgH
+			};
+		}
+
 		break;
 	}
 
@@ -216,7 +306,7 @@ function parseTripGame(){
 }
 
 function renderTripGame(){
-	var pleers = [], diff, difTxt, shkvarki, t;
+	var pleers = [], diff, difTxt, shkvarki, t, avas = [], playa;
 	
 	for (var property in tgStats) {
 		if (tgStats.hasOwnProperty(property)) {
@@ -231,6 +321,17 @@ function renderTripGame(){
 	$('#twContent').empty();
 
 	for (var i = 0; i < pleers.length; i++) {
+		playa = pleers[i];
+		if(playa.ava){
+			console.log(playa);
+			if(playa.ava.src.match(/^\/\d+\/\d+\/\d+\/\d+-[0-9a-f]+\.png$/i) && 
+				playa.ava.width <= 200 && playa.ava.height <= 200 &&
+				playa.ava.width > 0 && playa.ava.height > 0){
+				avas.push('.tw-' + bytesToHex(strToUTF8Arr(playa.trip)) + ' img.post-image:not(:hover) {-moz-box-sizing: border-box; box-sizing: border-box; padding-left: '+playa.ava.width+'px; background: url("http://cdn.syn-ch.com/thumb'+playa.ava.src+'"); width: '+playa.ava.width+'px !important; height: '+playa.ava.height+'px  !important;}');
+			}			
+		}
+
+
 		if(pleers[i].energy === 0) continue;
 		if(!tgStats[pleers[i].trip].prev){
 			tgStats[pleers[i].trip].prev = pleers[i].energy;
@@ -259,19 +360,23 @@ function renderTripGame(){
 			shkvarki = '<span class="fr"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwBAMAAAClLOS0AAAAFVBMVEU0AAAAAAAAEf8/NiMtX2PueUL///+0Rm5gAAAAAXRSTlMAQObYZgAAARhJREFUOMut0luqAjEMBuCOl/cJ2ncpzPuR0AUIbqCGLsD9b+IkvU0zdR4Eg4Lm88+0QWNKTfyC2YwF8wTwQaQrtQuD1P4wrAHsTNpGdgG+hel3AL+DZ60OJv5wavB8rPuCdVKO1FR/1Kt6EEuUCv0R8jBL6K1F9JFQne3Mv7dWUoR47yLn+Oa2vBlQQQwxFyLd1agNlFuuQBgSmAa2gLcC8whBEusSZVIahiFgv13uhgzRaiCAS06QBr4XL0QSqEAujCinvWhIfY7w9fBPA3HI85tU3xzTGM8pMhvwebN+gFJxBzj3GfgmNwVLC7wUuNgCznX9w5IOK7t6OVcjB+fcIksPBao4Kfn7JEjfbgpiDShYCqQv+fH/e2h063llRdsAAAAASUVORK5CYII=" style="width:25px;" title="Чак Норрис" alt="Чак Норрис"></span>';
 		}
 
+		var tripClasses = [];
+		if(pleers[i].raped == curThread) tripClasses.push('twRaped');
+		if(pleers[i].lastThread != curThread && i != 0) tripClasses.push('twAway');
+
 		$('#twContent').append('<div data-trip="'+pleers[i].trip+'"' + 
-			(i == 0? ' style="font-size:16px"':'') + 
-			(pleers[i].raped == curThread? ' class="twRaped"':'') + 
-			'>'+ 
+			(i == 0? ' style="font-size:16px"':'') + ' class="'+ tripClasses.join(' ') +'">' + 
 			(pleers[i].title? '<em>'+pleers[i].title.title+'</em> ' : '') +
 			'<strong>' + pleers[i].name +'</strong><span style="color: #228854;">'+pleers[i].trip+'</span>'+
 			'<span class="fr badge"><strong>'+pleers[i].energy+'</strong></span>'+
 			'<span class="fr">'+difTxt+'</span>'+
 			shkvarki+
-			'<span class="ctrls">[<a href="javascript:;" title="пульнуть">A</a>]&nbsp;[<a href="javascript:;" title="дать шкварку">S</a>]&nbsp;[<a href="javascript:;" title="дать титул">T</a>]&nbsp;[<a href="javascript:;" title="покормить">F</a>]&nbsp;[<a href="javascript:;" title="RAEP!">R</a>]</span><br>'+
+			'<br><span class="ctrls">[<a href="javascript:;" title="пульнуть">A</a>]&nbsp;[<a href="javascript:;" title="дать шкварку">S</a>]&nbsp;[<a href="javascript:;" title="дать титул">T</a>]&nbsp;[<a href="javascript:;" title="покормить">F</a>]&nbsp;[<a href="javascript:;" title="RAEP!">R</a>]&nbsp;[<a href="javascript:;" title="новое лицо">I</a>]</span>'+
 			'</div>');
 		tgStats[pleers[i].trip].prev = pleers[i].energy;
 	}
+	console.log(avas);
+	$('head #twAvaStyle').replaceWith('<style type="text/css" id="twAvaStyle">'+avas.join(' ')+'</style>');
 }
 var tbEvents = false,
 	scanTimer;
@@ -292,28 +397,31 @@ function postInserted(){
 	return true;
 }
 
-var curThread;
+var curThread, baseThread;
 
 $(function(){
-	if (window.location.pathname.match(/\/\w+\/res\/[0-9\+]+\.html/)) {
+	if (window.location.pathname.match(/\/\w+\/(res|arch)\/[0-9\+]+\.html/)) {
 		$(document).on('new_post', function(e, b){
 			tbEvents = true;
 			twScanner();
 			return true;
 		});
 
-		var m = window.location.pathname.match(/\/\w+\/res\/([0-9\+]+)\.html/);
-		curThread = parseInt(m[1]);
+		var m = window.location.pathname.match(/\/\w+\/(res|arch)\/([0-9\+]+)\.html/);
+		curThread = parseInt(m[2]);
 		console.log(curThread);
 
 		if(localStorage.twBaseThread && curThread > localStorage.twBaseThread){
 			tgStats = JSON.parse(localStorage.twBaseStats);
+			baseThread = localStorage.twBaseThread;
 			console.log('stats loaded');
 		}
 
-		$('body').append('<div id="tripwars"><span id="twCollapser"><i class="fa fa-minus-square"></i></span> <span id="twConf"><i class="fa fa-cog"></i></span> <span id="odometer" style="float: right;"></span><div id="twContent"></div><div id="twConfig"><strong>TripWars</strong> v'+(typeof GM_info !== 'undefined' ? GM_info.script.version : GM_getMetadata("version"))+'<br><textarea id="twConfArea"></textarea><br/><button id="twApplyConf">применить</button></div></div>');
-		$('head').append('<style type="text/css">   #tripwars { max-height: 90%; overflow-y: auto; min-width: 400px; position: fixed; top: 15px; right: 30px; background: #fff; padding: 5px; font-size: 12px; border-radius: 3px; box-shadow: 0px 0px 10px rgba(0,0,0,0.25); counter-reset: pstn; } #twContent div:before { counter-increment: pstn; content: counter(pstn) ": "; } #twContent div { padding: 5px; border-bottom: 1px solid #eee; position: relative; } #tripwars span.fr{ float: right; margin-left: 5px; } #twContent div:hover span.fr{ visibility: hidden; } #twContent div:hover span.ctrls{ display: block; position: absolute; right: 0; top: 0; margin-top: auto; margin-bottom: auto; bottom: 0; height: 12px; } #twContent div span.ctrls{ display: none; } #tripwars span.badge{ color: white; background: #3db; padding: 3px; border-radius: 10px; } #tripwars br{ clear: both; } .twShowLess div { display:none; } .twShowLess div:first-child { display:block; } #twCollapser, #twConf {cursor: pointer;} .twShowConfig #twContent {display: none;} #twConfig {display:none;} .twShowConfig #twConfig {display: block;} #twConfig textarea {margin: 0 !important; width: 400px; resize: vertical; min-height:400px;} .twRaped > span:not(.badge), .twRaped > strong, .twRaped > em {color: pink !important;}</style>');
-		$('#twCollapser').on('click', function(){$('#twContent').toggleClass('twShowLess')});
+		$('body').append('<div id="tripwars"><span id="twCollapser"><i class="fa fa-minus-square"></i></span> <span id="twConf"><i class="fa fa-cog"></i></span> <span id="twHideAway"><i class="fa fa-eye"></i></span><span id="odometer" style="float: right;"></span><div id="twContent"></div><div id="twConfig"><strong>TripWars</strong> v'+(typeof GM_info !== 'undefined' ? GM_info.script.version : GM_getMetadata("version"))+'<br><textarea id="twConfArea"></textarea><br/><button id="twApplyConf">применить</button></div></div>');
+		$('head').append('<style type="text/css">   #tripwars { max-height: 90%; overflow-y: auto; min-width: 400px; position: fixed; top: 15px; right: 30px; background: #fff; padding: 5px; font-size: 12px; border-radius: 3px; box-shadow: 0px 0px 10px rgba(0,0,0,0.25); counter-reset: pstn; } #twContent div:before { counter-increment: pstn; content: counter(pstn) ": "; } #twContent div { padding: 5px; border-bottom: 1px solid #eee; position: relative; } #tripwars span.fr{ float: right; margin-left: 5px; } #tw0Content div:hover span.fr{ visibility: hidden; } #twContent div:hover span.ctrls{ display: block; } #twContent div span.ctrls{ display: none; } #tripwars span.badge{ color: white; background: #3db; padding: 3px; border-radius: 10px; } #tripwars br{ clear: both; } .twShowLess div { display:none; } .twShowLess div:first-child { display:block; } #twCollapser, #twConf {cursor: pointer;} .twShowConfig #twContent {display: none;} #twConfig {display:none;} .twShowConfig #twConfig {display: block;} #twConfig textarea {margin: 0 !important; width: 400px; resize: vertical; min-height:400px;} .twRaped > span:not(.badge), .twRaped > strong, .twRaped > em {color: pink !important;} .twAway:not(:hover) * {opacity: 0.75} .twHideAway .twAway {display:none !important;}</style>');
+		$('head').append('<style type="text/css" id="twAvaStyle"></style>');
+		$('#twCollapser').on('click', function(){$('#twContent').toggleClass('twShowLess');$('#tripwars').removeClass('twShowConfig')});
+		$('#twHideAway').on('click', function(){$('#twContent').toggleClass('twHideAway');$('#tripwars').removeClass('twShowConfig')});
 		$('#twConf').on('click', function(){$('#tripwars').toggleClass('twShowConfig')});
 		$('#tripwars').on('click', function(e){
 			var cmd = e.target.textContent, title;
@@ -337,6 +445,9 @@ $(function(){
 			if(cmd == 'R'){
 				$('form textarea#body').val($('form textarea#body').val() + '\n[h]R:'+trip+'[/h]');
 			}
+			if(cmd == 'I'){
+				$('form textarea#body').val($('form textarea#body').val() + '\n[h]I:'+trip+'[/h]');
+			}
 		});
 
 		$('#twConfArea').val(JSON.stringify({
@@ -352,6 +463,7 @@ $(function(){
 			
 			localStorage.twBaseStats = JSON.stringify(tgStats);
 			localStorage.twBaseThread = conf.twBaseThread;
+			baseThread = conf.twBaseThread;
 
 			parseTripGame();
 		});
