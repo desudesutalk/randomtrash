@@ -3,34 +3,38 @@
         "!PustotA10M": {
             "name": "Salt",
             "trip": "!PustotA10M",
-            "energy": 774,
+            "energy": 985,
             "shkvarki": {},
             "title": {
                 "from": "!/kyOuko.4A",
-                "cost": 10,
-                "title": "Солевой"
+                "cost": 20,
+                "title": "Солонка с сушеным говном"
             },
-            "prev": 774
+            "prev": 985
         },
         "!YnrKuf9gkA": {
             "name": "Rika",
             "trip": "!YnrKuf9gkA",
-            "energy": 702,
+            "energy": 738,
             "shkvarki": {},
-            "title": null,
-            "prev": 702
+            "title": {
+                "from": "!/kyOuko.4A",
+                "cost": 10,
+                "title": "Ебошит до крика"
+            },
+            "prev": 738
         },
         "!mironaxxOY": {
             "name": "Oxxxy",
             "trip": "!mironaxxOY",
-            "energy": 569,
+            "energy": 331,
             "shkvarki": {},
             "title": {
                 "from": "!/kyOuko.4A",
-                "cost": 40,
-                "title": "Евреечка"
+                "cost": 80,
+                "title": "Девочка-припевочка"
             },
-            "prev": 569
+            "prev": 331
         },
         "!B4inUX7.e.": {
             "name": "Horo",
@@ -43,88 +47,120 @@
         "!RIEExrBWWo": {
             "name": "Etna",
             "trip": "!RIEExrBWWo",
-            "energy": 834,
-            "shkvarki": {},
-            "title": null,
-            "prev": 834
-        },
-        "!Cute": {
-            "name": "Сумеречная Кискорка",
-            "trip": "!Cute",
-            "energy": 1233,
-            "shkvarki": {},
-            "title": null,
-            "prev": 1233
-        },
-        "!!Hsg3qWycuc": {
-            "name": "Уцуха",
-            "trip": "!!Hsg3qWycuc",
-            "energy": 293,
-            "shkvarki": {
-                "!μ μ μ μ": true
-            },
-            "title": null,
-            "prev": 293
-        },
-        "!ShinkuLpCY": {
-            "name": "Shinku_fag",
-            "trip": "!ShinkuLpCY",
-            "energy": 268,
-            "shkvarki": {},
-            "title": null,
-            "prev": 268
-        },
-        "!John Dowson": {
-            "name": "",
-            "trip": "!John Dowson",
-            "energy": 100,
-            "shkvarki": {},
-            "title": null,
-            "prev": 100
-        },
-        "!UtkaQqQJQM": {
-            "name": "Утейка",
-            "trip": "!UtkaQqQJQM",
-            "energy": 996,
-            "shkvarki": {},
-            "title": null,
-            "prev": 996
-        },
-        "!K0xIzQQYRs": {
-            "name": "eva ",
-            "trip": "!K0xIzQQYRs",
-            "energy": 650,
+            "energy": 880,
             "shkvarki": {},
             "title": {
                 "from": "!/kyOuko.4A",
                 "cost": 10,
-                "title": "Больше не котейка"
+                "title": "Голенькая любительница шерсти"
             },
-            "prev": 650
+            "prev": 880
+        },
+        "!Cute": {
+            "name": "Сумеречная кискарка",
+            "trip": "!Cute",
+            "energy": 1274,
+            "shkvarki": {},
+            "title": {
+                "from": "!UtkaQqQJQM",
+                "cost": 20,
+                "title": "Няха Няха Няха"
+            },
+            "prev": 1274
+        },
+        "!!Hsg3qWycuc": {
+            "name": "Уцуха",
+            "trip": "!!Hsg3qWycuc",
+            "energy": 352,
+            "shkvarki": {
+                "!μ μ μ μ": true
+            },
+            "title": {
+                "from": "!mironaxxOY",
+                "cost": 10,
+                "title": "Борцуха"
+            },
+            "prev": 352
+        },
+        "!ShinkuLpCY": {
+            "name": "Shinku_fag",
+            "trip": "!ShinkuLpCY",
+            "energy": 334,
+            "shkvarki": {},
+            "title": {
+                "from": "!3GINTOujG.",
+                "cost": 10,
+                "title": "Волосатые ноги"
+            },
+            "prev": 334
+        },
+        "!John Dowson": {
+            "name": "",
+            "trip": "!John Dowson",
+            "energy": 141,
+            "shkvarki": {},
+            "title": null,
+            "prev": 141
+        },
+        "!UtkaQqQJQM": {
+            "name": "Утейка",
+            "trip": "!UtkaQqQJQM",
+            "energy": 1050,
+            "shkvarki": {},
+            "title": {
+                "from": "!/kyOuko.4A",
+                "cost": 10,
+                "title": "Простит"
+            },
+            "prev": 1050
+        },
+        "!K0xIzQQYRs": {
+            "name": "eva ",
+            "trip": "!K0xIzQQYRs",
+            "energy": 672,
+            "shkvarki": {},
+            "title": {
+                "from": "!3GINTOujG.",
+                "cost": 20,
+                "title": "Самая няшная из всех няшных ня"
+            },
+            "prev": 672
         },
         "!HaGudFIQ3Y": {
             "name": "Suigintou",
             "trip": "!HaGudFIQ3Y",
             "energy": 89,
             "shkvarki": {},
-            "title": null,
+            "title": {
+                "from": "!/kyOuko.4A",
+                "cost": 10,
+                "title": "Танцевать научи бладж"
+            },
             "prev": 89
         },
         "!e93w6BLas2": {
             "name": "Nonon2",
             "trip": "!e93w6BLas2",
-            "energy": 274,
+            "energy": 280,
             "shkvarki": {},
-            "title": null,
-            "prev": 274
+            "title": {
+                "from": "!/kyOuko.4A",
+                "cost": 10,
+                "title": "Имя ей - Легион"
+            },
+            "prev": 280
         },
         "!KAPITANm0g": {
             "name": "Шепард",
             "trip": "!KAPITANm0g",
-            "energy": 334,
+            "energy": 358,
             "shkvarki": {},
-            "title": null,
-            "prev": 334
+            "title": {
+                "from": "!/kyOuko.4A",
+                "cost": 10,
+                "title": "Умрет в третьей части"
+            },
+            "prev": 358
         },
         "!OWKiocPMbI": {
             "name": "Yudachi",
@@ -137,18 +173,26 @@
         "!axtZ4SSxZ2": {
             "name": "Zonesama",
             "trip": "!axtZ4SSxZ2",
-            "energy": 597,
+            "energy": 694,
             "shkvarki": {},
-            "title": null,
-            "prev": 597
+            "title": {
+                "from": "!/kyOuko.4A",
+                "cost": 40,
+                "title": "Груша"
+            },
+            "prev": 694
         },
         "!/kyOuko.4A": {
             "name": "Kyouko Sakura",
             "trip": "!/kyOuko.4A",
-            "energy": 520,
+            "energy": 527,
             "shkvarki": {},
-            "title": null,
-            "prev": 520
+            "title": {
+                "from": "!mironaxxOY",
+                "cost": 10,
+                "title": "Няшечка-писечка"
+            },
+            "prev": 527
         },
         "!LUPerKALRk": {
             "name": "Хорушка",
@@ -161,10 +205,10 @@
         "!gWmE72hUM.": {
             "name": "Hina",
             "trip": "!gWmE72hUM.",
-            "energy": 95,
+            "energy": 106,
             "shkvarki": {},
             "title": null,
-            "prev": 95
+            "prev": 106
         },
         "!qk7yf3WNdQ": {
             "name": "Bernbern",
@@ -193,10 +237,10 @@
         "!rose//scQs": {
             "name": "",
             "trip": "!rose//scQs",
-            "energy": 172,
+            "energy": 204,
             "shkvarki": {},
             "title": null,
-            "prev": 172
+            "prev": 204
         },
         "!casterQPFA": {
             "name": "Medea",
@@ -217,10 +261,14 @@
         "!nyasha.1Kk": {
             "name": "Ами ",
             "trip": "!nyasha.1Kk",
-            "energy": 444,
+            "energy": 570,
             "shkvarki": {},
-            "title": null,
-            "prev": 444
+            "title": {
+                "from": "!/kyOuko.4A",
+                "cost": 10,
+                "title": "приколно лошать"
+            },
+            "prev": 570
         },
         "!!R06JSP5uFk": {
             "name": "Renge",
@@ -239,16 +287,20 @@
             "trip": "!!4pBF6TDQac",
             "energy": 244,
             "shkvarki": {},
-            "title": null,
+            "title": {
+                "from": "!mironaxxOY",
+                "cost": 10,
+                "title": "Истинный ариец"
+            },
             "prev": 244
         },
         "!μ μ μ μ": {
-            "name": "Sea serpent",
+            "name": "",
             "trip": "!μ μ μ μ",
-            "energy": 126,
+            "energy": 260,
             "shkvarki": {},
             "title": null,
-            "prev": 126
+            "prev": 260
         },
         "!YlTclYE5cI": {
             "name": "",
@@ -309,10 +361,10 @@
         "!5renzyjjOk": {
             "name": "5renzy",
             "trip": "!5renzyjjOk",
-            "energy": 195,
+            "energy": 212,
             "shkvarki": {},
             "title": null,
-            "prev": 195
+            "prev": 212
         },
         "!.CzKQna1OU": {
             "name": "test",
@@ -333,18 +385,22 @@
         "!!ws7mYS1ubY": {
             "name": "Канария-тульповод",
             "trip": "!!ws7mYS1ubY",
-            "energy": 2,
+            "energy": 27,
             "shkvarki": {},
             "title": null,
-            "prev": 2
+            "prev": 27
         },
         "!!gbh2pgG4MQ": {
             "name": "Sou",
             "trip": "!!gbh2pgG4MQ",
-            "energy": 152,
+            "energy": 291,
             "shkvarki": {},
-            "title": null,
-            "prev": 152
+            "title": {
+                "from": "!mironaxxOY",
+                "cost": 20,
+                "title": "Аллах"
+            },
+            "prev": 291
         },
         "!1iPGyk7RXM": {
             "name": "Nonon3",
@@ -365,10 +421,10 @@
         "!TrIPcoDE6.": {
             "name": "Jesse",
             "trip": "!TrIPcoDE6.",
-            "energy": 42,
+            "energy": 67,
             "shkvarki": {},
             "title": null,
-            "prev": 42
+            "prev": 67
         },
         "!SHOGUNq31E": {
             "name": "Wo-Class",
@@ -413,10 +469,10 @@
         "!92Ypa3esbo": {
             "name": "Беззубик",
             "trip": "!92Ypa3esbo",
-            "energy": 6,
+            "energy": 81,
             "shkvarki": {},
             "title": null,
-            "prev": 6
+            "prev": 81
         },
         "!zNDIscOrd2": {
             "name": " Бог-Император Антарктиды",
@@ -437,10 +493,10 @@
         "!Qwpd7/AtbY": {
             "name": "Fubuki-chan",
             "trip": "!Qwpd7/AtbY",
-            "energy": 512,
+            "energy": 91,
             "shkvarki": {},
             "title": null,
-            "prev": 512
+            "prev": 91
         },
         "!GgGinToUxM": {
             "name": "Suigintou",
@@ -453,19 +509,39 @@
         "!3GINTOujG.": {
             "name": "Suigintou",
             "trip": "!3GINTOujG.",
-            "energy": 244,
+            "energy": 303,
             "shkvarki": {},
-            "title": null,
-            "prev": 244
+            "title": {
+                "from": "!nyasha.1Kk",
+                "cost": 20,
+                "title": "Лучшая кукла"
+            },
+            "prev": 303
         },
         "!!SnJWLroumc": {
             "name": "Сусека ",
             "trip": "!!SnJWLroumc",
-            "energy": 14,
+            "energy": 20,
             "shkvarki": {},
             "title": null,
-            "prev": 14
+            "prev": 20
+        },
+        "!ns5WW/ldAo": {
+            "name": "Tomoko",
+            "trip": "!ns5WW/ldAo",
+            "energy": 59,
+            "shkvarki": {},
+            "title": null,
+            "prev": 59
+        },
+        "!o.jsM.ZhXM": {
+            "name": "Утейка",
+            "trip": "!o.jsM.ZhXM",
+            "energy": 1,
+            "shkvarki": {},
+            "title": null,
+            "prev": 1
         }
     },
-    "twBaseThread": "2207468"
+    "twBaseThread": "2208351"
 }
