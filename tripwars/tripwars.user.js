@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.13
+// @version      0.0.14
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -122,7 +122,7 @@ function parsePostResults(p){
 	}
 	
 	for (i = 0; i < spoils.length; i++) {
-		m = spoils[i].textContent.match(/^([astf])(:([a-z0-9а-я\-\s]{0,30}))?:(!{1,2}.+)$/i);
+		m = spoils[i].textContent.match(/^([astfr])(:([a-z0-9а-я\-\s]{0,30}))?:(!{1,2}.+)$/i);
 		if(!m) continue;
 		if(m[4] == trip) break;
 
