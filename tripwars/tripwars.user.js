@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.18
+// @version      0.0.19
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -178,10 +178,9 @@ function parsePostResults(p){
 		m = img.src.match(/thumb(\/\d+\/\d+\/\d+\/\d+-[0-9a-f]+\.png$)/i);
 		if(m){
 			imgSrc = m[1];
-			imgW = img.width;
-			imgH = img.height;
-		}
-		
+			imgW = parseInt(img.style.width.replace('px',''));
+			imgH = parseInt(img.style.height.replace('px',''));
+		}		
 	}
 
 	if(file) {
