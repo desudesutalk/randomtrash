@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.15
+// @version      0.0.16
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -266,7 +266,8 @@ function parsePostResults(p){
 				from: trip,
 				src: imgSrc,
 				width: imgW,
-				height: imgH
+				height: imgH,
+				thread: curThread
 			};
 		}
 
@@ -304,6 +305,7 @@ function parseTripGame(){
 }
 
 function renderTripGame(){
+	console.time('tw render');
 	var pleers = [], diff, difTxt, shkvarki, t, avas = [], playa;
 	
 	for (var property in tgStats) {
@@ -323,11 +325,11 @@ function renderTripGame(){
 		if(playa.ava){
 			if(playa.ava.src.match(/^\/\d+\/\d+\/\d+\/\d+-[0-9a-f]+\.png$/i) && 
 				playa.ava.width <= 200 && playa.ava.height <= 200 &&
-				playa.ava.width > 0 && playa.ava.height > 0){
+				playa.ava.width > 0 && playa.ava.height > 0 &&
+				playa.ava.thread == curThread){
 				avas.push('.tw-' + bytesToHex(strToUTF8Arr(playa.trip)) + ' img.post-image:not(:hover) {-moz-box-sizing: border-box; box-sizing: border-box; padding-left: '+playa.ava.width+'px; background: url("http://cdn.syn-ch.com/thumb'+playa.ava.src+'"); width: '+playa.ava.width+'px !important; height: '+playa.ava.height+'px  !important;}');
 			}			
 		}
-
 
 		if(pleers[i].energy === 0) continue;
 		if(!tgStats[pleers[i].trip].prev){
@@ -373,6 +375,7 @@ function renderTripGame(){
 		tgStats[pleers[i].trip].prev = pleers[i].energy;
 	}
 	$('head #twAvaStyle').replaceWith('<style type="text/css" id="twAvaStyle">'+avas.join(' ')+'</style>');
+	console.timeEnd('tw render');
 }
 var tbEvents = false,
 	scanTimer;
@@ -386,8 +389,9 @@ function twScanner(){
 	}, 500);	
 }
 
-function postInserted(){
+function postInserted(event){
 	if(tbEvents) return true;
+	if(event.animationName != 'twNInsrt') return true;
 	
 	twScanner();
 	return true;
@@ -412,7 +416,7 @@ $(function(){
 		}
 
 		$('body').append('<div id="tripwars"><span id="twCollapser"><i class="fa fa-minus-square"></i></span> <span id="twConf"><i class="fa fa-cog"></i></span> <span id="twHideAway"><i class="fa fa-eye"></i></span><span id="odometer" style="float: right;"></span><div id="twContent"></div><div id="twConfig"><strong>TripWars</strong> v'+(typeof GM_info !== 'undefined' ? GM_info.script.version : GM_getMetadata("version"))+'<br><textarea id="twConfArea"></textarea><br/><button id="twApplyConf">применить</button></div></div>');
-		$('head').append('<style type="text/css">   #tripwars { max-height: 90%; overflow-y: auto; min-width: 400px; position: fixed; top: 15px; right: 30px; background: #fff; padding: 5px; font-size: 12px; border-radius: 3px; box-shadow: 0px 0px 10px rgba(0,0,0,0.25); counter-reset: pstn; } #twContent div:before { counter-increment: pstn; content: counter(pstn) ": "; } #twContent div { padding: 5px; border-bottom: 1px solid #eee; position: relative; } #tripwars span.fr{ float: right; margin-left: 5px; } #tw0Content div:hover span.fr{ visibility: hidden; } #twContent div:hover span.ctrls{ display: block; } #twContent div span.ctrls{ display: none; } #tripwars span.badge{ color: white; background: #3db; padding: 3px; border-radius: 10px; } #tripwars br{ clear: both; } .twShowLess div { display:none; } .twShowLess div:first-child { display:block; } #twCollapser, #twConf {cursor: pointer;} .twShowConfig #twContent {display: none;} #twConfig {display:none;} .twShowConfig #twConfig {display: block;} #twConfig textarea {margin: 0 !important; width: 400px; resize: vertical; min-height:400px;} .twRaped > span:not(.badge), .twRaped > strong, .twRaped > em {color: pink !important;} .twAway:not(:hover) * {opacity: 0.75} .twHideAway .twAway {display:none !important;}</style>');
+		$('head').append('<style type="text/css">   #tripwars { max-height: 90%; overflow-y: auto; min-width: 400px; position: fixed; top: 15px; right: 30px; background: #fff; padding: 5px; font-size: 12px; border-radius: 3px; box-shadow: 0px 0px 10px rgba(0,0,0,0.25); counter-reset: pstn; } #twContent div:before { counter-increment: pstn; content: counter(pstn) ": "; } #twContent div { padding: 5px; border-bottom: 1px solid #eee; position: relative; } #tripwars span.fr{ float: right; margin-left: 5px; } #tw0Content div:hover span.fr{ visibility: hidden; } #twContent div:hover span.ctrls{ display: block; } #twContent div span.ctrls{ display: none; } #tripwars span.badge{ color: white; background: #3db; padding: 3px; border-radius: 10px; } #tripwars br{ clear: both; } .twShowLess div { display:none; } .twShowLess div:first-child { display:block; } #twCollapser, #twConf, #twHideAway {cursor: pointer;} .twShowConfig #twContent {display: none;} #twConfig {display:none;} .twShowConfig #twConfig {display: block;} #twConfig textarea {margin: 0 !important; width: 400px; resize: vertical; min-height:400px;} .twRaped > span:not(.badge), .twRaped > strong, .twRaped > em {color: pink !important;} .twAway:not(:hover) * {opacity: 0.75} .twHideAway .twAway {display:none !important;}</style>');
 		$('head').append('<style type="text/css" id="twAvaStyle"></style>');
 		$('#twCollapser').on('click', function(){$('#twContent').toggleClass('twShowLess');$('#tripwars').removeClass('twShowConfig')});
 		$('#twHideAway').on('click', function(){$('#twContent').toggleClass('twHideAway');$('#tripwars').removeClass('twShowConfig')});
@@ -473,7 +477,7 @@ $(function(){
 			animationTrigger = '{animation-duration:0.001s;-o-animation-duration:0.001s;-ms-animation-duration:0.001s;-moz-animation-duration:0.001s;-webkit-animation-duration:0.001s;animation-name:twNInsrt;-o-animation-name:twNInsrt;-ms-animation-name:twNInsrt;-moz-animation-name:twNInsrt;-webkit-animation-name:twNInsrt;}';
 		$('<style type="text/css">@keyframes ' + insertAnimation + '@-moz-keyframes ' + insertAnimation + '@-webkit-keyframes ' +
 			insertAnimation + '@-ms-keyframes ' + insertAnimation + '@-o-keyframes ' + insertAnimation +
-			' .reply .body ' + animationTrigger + '</style>').appendTo('head');
+			'form .reply .body ' + animationTrigger + '</style>').appendTo('head');
 		$(document).bind('animationstart', postInserted).bind('MSAnimationStart', postInserted).bind('webkitAnimationStart', postInserted);
 	}
 });
