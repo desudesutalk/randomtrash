@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.17
+// @version      0.0.18
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -373,7 +373,8 @@ function renderTripGame(){
 			'</div>');
 		tgStats[pleers[i].trip].prev = pleers[i].energy;
 	}
-	$('head #twAvaStyle').replaceWith('<style type="text/css" id="twAvaStyle">'+avas.join(' ')+'</style>');
+	$('head #twAvaStyle').remove();
+	$('head').append('<style type="text/css" id="twAvaStyle">'+avas.join(' ')+'</style>');
 }
 var tbEvents = false,
 	scanTimer;
