@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.16
+// @version      0.0.17
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -305,7 +305,6 @@ function parseTripGame(){
 }
 
 function renderTripGame(){
-	console.time('tw render');
 	var pleers = [], diff, difTxt, shkvarki, t, avas = [], playa;
 	
 	for (var property in tgStats) {
@@ -375,7 +374,6 @@ function renderTripGame(){
 		tgStats[pleers[i].trip].prev = pleers[i].energy;
 	}
 	$('head #twAvaStyle').replaceWith('<style type="text/css" id="twAvaStyle">'+avas.join(' ')+'</style>');
-	console.timeEnd('tw render');
 }
 var tbEvents = false,
 	scanTimer;
@@ -391,7 +389,7 @@ function twScanner(){
 
 function postInserted(event){
 	if(tbEvents) return true;
-	if(event.animationName != 'twNInsrt') return true;
+	if(event.originalEvent.animationName != 'twNInsrt') return true;
 	
 	twScanner();
 	return true;
