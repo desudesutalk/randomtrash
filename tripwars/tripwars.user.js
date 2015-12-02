@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.19
+// @version      0.0.20
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -350,7 +350,7 @@ function renderTripGame(){
 				(t>1? 'x'+t : '') +'</span>';
 		}
 		if(t > 9){
-			shkvarki = '<span class="fr"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAD1BMVEUAAAAAAAAnKQD/AADz/wCPxeqtAAAAAXRSTlMAQObYZgAAADZJREFUCNdjYMAGBKA0oyGMYQwVEjY2hDGgQoKCghCGkJISjKECFxGEMYQFYAxDqC5BASw2AwAbAQRmB+kZqAAAAABJRU5ErkJggg== title="КУДАХ" alt="КУДАХ"></span>';
+			shkvarki = '<span class="fr"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAD1BMVEUAAAAAAAAnKQD/AADz/wCPxeqtAAAAAXRSTlMAQObYZgAAADZJREFUCNdjYMAGBKA0oyGMYQwVEjY2hDGgQoKCghCGkJISjKECFxGEMYQFYAxDqC5BASw2AwAbAQRmB+kZqAAAAABJRU5ErkJggg==" title="КУДАХ" alt="КУДАХ"></span>';
 		}
 
 		if(i == 0){
