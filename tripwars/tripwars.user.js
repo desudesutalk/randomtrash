@@ -222,7 +222,6 @@ function parsePostResults(p, isOp){
 
 			if(m){
 				e += Math.pow(10, m[0].length - 1);
-				console.log(pid, e);
 			}else{
 				e++;
 			}
@@ -317,9 +316,6 @@ function parsePostResults(p, isOp){
 		tgStats[tgPostHits[t].from].energy += tgStats[trip].energy > 50 ? 5 : 1;
 	}
 
-	if(isOp){
-		console.log(JSON.stringify(tgStats[trip], null,2));
-	}
 	return true;
 }
 
