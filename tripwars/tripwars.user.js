@@ -508,6 +508,14 @@ $(function(){
 			localStorage.twBaseThread = conf.twBaseThread;
 			baseThread = conf.twBaseThread;
 
+			savedState = JSON.stringify({
+				twBaseStats: JSON.parse(localStorage.twBaseStats || "{}"),
+				twBaseThread: localStorage.twBaseThread || curThread 
+			})
+
+			$('#twConfArea').val(savedState);
+			$('#twHash').text(md5(savedState).match(/[0-9-a-f]{4}/ig).join('-'));
+
 			parseTripGame();
 		});
 
