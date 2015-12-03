@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.21
+// @version      0.0.22
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -177,7 +177,7 @@ function killTrip(trip){
 	tgStats[trip].ava = null;
 }
 
-function parsePostResults(p){
+function parsePostResults(p, isOp){
 	var file = p.querySelector('.file-info a'),
 		trip = p.querySelector('.intro span.trip'),
 		refs = p.querySelectorAll('div.body a[onclick^=highlightReply]'),
@@ -185,7 +185,7 @@ function parsePostResults(p){
 		spoils = p.querySelectorAll('div.body span.spoiler'),
 		img = p.querySelector('img.post-image'), imgSrc, imgW, imgH,
 		pid = p.id.replace('reply_', ''),
-		hits = [], rnd, i, j, r, m, t, atck, tCost;
+		hits = [], rnd, i, j, r, m, t, atck, tCost, e;
 
 	if(!trip) return null;
 	trip = trip.textContent.substring(0,12);
@@ -217,7 +217,16 @@ function parsePostResults(p){
 		tgStats[trip] = {name: name, trip: trip, energy: 1, shkvarki: {}, title: null}
 	}else{
 		if(tgStats[trip].raped != curThread){
-			tgStats[trip].energy++;
+			e = isOp? 250 : 0;
+			m = pid.match(/(\d)\1+$/);
+
+			if(m){
+				e += Math.pow(10, m[0].length - 1);
+				console.log(pid, e);
+			}else{
+				e++;
+			}
+			tgStats[trip].energy += e;
 		}
 		tgStats[trip].name = name;
 	}
@@ -307,12 +316,18 @@ function parsePostResults(p){
 		tgPostHits[t].hits[trip] = true;
 		tgStats[tgPostHits[t].from].energy += tgStats[trip].energy > 50 ? 5 : 1;
 	}
+
+	if(isOp){
+		console.log(JSON.stringify(tgStats[trip], null,2));
+	}
 	return true;
 }
 
 function parseTripGame(){
 	var posts = document.querySelectorAll('form div.post.reply'),
 		i;
+
+	parsePostResults(document.querySelector('form div.post.op'), true);
 
 	for (i = 0; i < posts.length && i < 500; i++) {
 		parsePostResults(posts[i]);
