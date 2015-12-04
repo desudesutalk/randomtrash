@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.22
+// @version      0.0.23
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -19,6 +19,31 @@ function bytesToHex(bytes){
     }
     return hex.join("");
 }
+
+var utf8ArrToStr = function(aBytes) {
+	"use strict";
+	var sView = "";
+
+	for (var nPart, nLen = aBytes.length, nIdx = 0; nIdx < nLen; nIdx++) {
+		nPart = aBytes[nIdx];
+		sView += String.fromCharCode(
+			nPart > 251 && nPart < 254 && nIdx + 5 < nLen ? /* six bytes */
+			/* (nPart - 252 << 32) is not possible in ECMAScript! So...: */
+			(nPart - 252) * 1073741824 + (aBytes[++nIdx] - 128 << 24) + (aBytes[++nIdx] - 128 << 18) + (aBytes[++nIdx] - 128 << 12) + (aBytes[++nIdx] - 128 << 6) + aBytes[++nIdx] - 128
+			: nPart > 247 && nPart < 252 && nIdx + 4 < nLen ? /* five bytes */
+			(nPart - 248 << 24) + (aBytes[++nIdx] - 128 << 18) + (aBytes[++nIdx] - 128 << 12) + (aBytes[++nIdx] - 128 << 6) + aBytes[++nIdx] - 128
+			: nPart > 239 && nPart < 248 && nIdx + 3 < nLen ? /* four bytes */
+			(nPart - 240 << 18) + (aBytes[++nIdx] - 128 << 12) + (aBytes[++nIdx] - 128 << 6) + aBytes[++nIdx] - 128
+			: nPart > 223 && nPart < 240 && nIdx + 2 < nLen ? /* three bytes */
+			(nPart - 224 << 12) + (aBytes[++nIdx] - 128 << 6) + aBytes[++nIdx] - 128
+			: nPart > 191 && nPart < 224 && nIdx + 1 < nLen ? /* two bytes */
+			(nPart - 192 << 6) + aBytes[++nIdx] - 128
+			: /* nPart < 127 ? */ /* one byte */
+			nPart
+			);
+	}
+	return sView;
+};
 
 var strToUTF8Arr = function(sDOMStr) {
 	"use strict";
@@ -439,7 +464,18 @@ function postInserted(event){
 	return true;
 }
 
-var curThread, baseThread, savedState;
+var curThread, baseThread, savedState, savedStateHash;
+
+function genSaveState(){
+	savedState = JSON.stringify({
+		twBaseStats: JSON.parse(localStorage.twBaseStats || "{}"),
+		twBaseThread: localStorage.twBaseThread || curThread 
+	});
+	savedStateHash = md5(savedState);
+
+	$('#twConfArea').val(savedState);
+	$('#twHash').text(savedStateHash.match(/[0-9-a-f]{4}/ig).join('-'));
+}
 
 $(function(){
 	if (window.location.pathname.match(/\/\w+\/(res|arch)\/[0-9\+]+\.html/)) {
@@ -457,15 +493,15 @@ $(function(){
 			baseThread = localStorage.twBaseThread;
 		}
 
-		$('body').append('<div id="tripwars"><span id="twCollapser"><i class="fa fa-minus-square"></i></span> <span id="twConf"><i class="fa fa-cog"></i></span> <span id="twHideAway"><i class="fa fa-eye"></i></span><span id="odometer" style="float: right;"></span><div id="twContent"></div><div id="twConfig"><strong>TripWars</strong> v'+(typeof GM_info !== 'undefined' ? GM_info.script.version : GM_getMetadata("version"))+'<br><br><p>Хеш статов: <span id="twHash"></span></p><textarea id="twConfArea"></textarea><br/><button id="twApplyConf">применить</button></div></div>');
-		$('head').append('<style type="text/css">   #tripwars { max-height: 90%; overflow-y: auto; min-width: 400px; position: fixed; top: 15px; right: 30px; background: #fff; padding: 5px; font-size: 12px; border-radius: 3px; box-shadow: 0px 0px 10px rgba(0,0,0,0.25); counter-reset: pstn; } #twContent div:before { counter-increment: pstn; content: counter(pstn) ": "; } #twContent div { padding: 5px; border-bottom: 1px solid #eee; position: relative; } #tripwars span.fr{ float: right; margin-left: 5px; } #tw0Content div:hover span.fr{ visibility: hidden; } #twContent div:hover span.ctrls{ display: block; } #twContent div span.ctrls{ display: none; } #tripwars span.badge{ color: white; background: #3db; padding: 3px; border-radius: 10px; } #tripwars br{ clear: both; } .twShowLess div { display:none; } .twShowLess div:first-child { display:block; } #twCollapser, #twConf, #twHideAway {cursor: pointer;} .twShowConfig #twContent {display: none;} #twConfig {display:none;} .twShowConfig #twConfig {display: block;} #twConfig textarea {margin: 0 !important; width: 400px; resize: vertical; min-height:400px;} .twRaped > span:not(.badge), .twRaped > strong, .twRaped > em {color: pink !important;} .twAway:not(:hover) * {opacity: 0.75} .twHideAway .twAway {display:none !important;}</style>');
+		$('body').append('<div id="tripwars"><span id="twCollapser"><i class="fa fa-minus-square"></i></span> <span id="twConf"><i class="fa fa-cog"></i></span> <span id="twHideAway"><i class="fa fa-eye"></i></span><span id="odometer" style="float: right;"></span><div id="twContent"></div><div id="twConfig"><h1>TripWars v'+(typeof GM_info !== 'undefined' ? GM_info.script.version : GM_getMetadata("version"))+'</h1><br><p style="text-align: center;">Хеш статов: <strong id="twHash"></strong><br><button id="twSaveStats" style="float: left;"><i class="fa fa-download"></i> Скачать файл статсов</button><button id="twUploadStats" style="float: right;"><i class="fa fa-upload"></i> Загрузить файл статсов</button><input type="file" id="twUploadStatsInput" style="display: none;"><br></p><textarea id="twConfArea"></textarea><button id="twApplyConf">применить</button></div></div>');
+		$('head').append('<style type="text/css">   #tripwars { max-height: 90%; overflow-y: auto; min-width: 400px; position: fixed; top: 15px; right: 30px; background: #fff; padding: 5px; font-size: 12px; border-radius: 3px; box-shadow: 0px 0px 10px rgba(0,0,0,0.25); counter-reset: pstn; } #twContent div:before { counter-increment: pstn; content: counter(pstn) ": "; } #twContent div { padding: 5px; border-bottom: 1px solid #eee; position: relative; } #tripwars span.fr{ float: right; margin-left: 5px; } #tw0Content div:hover span.fr{ visibility: hidden; } #twContent div:hover span.ctrls{ display: block; } #twContent div span.ctrls{ display: none; } #tripwars span.badge{ color: white; background: #3db; padding: 3px; border-radius: 10px; } #tripwars br{ clear: both; } .twShowLess div { display:none; } .twShowLess div:first-child { display:block; } #twCollapser, #twConf, #twHideAway {cursor: pointer;} .twShowConfig #twContent {display: none;} #twConfig {display:none;} .twShowConfig #twConfig {display: block;} #twConfig textarea {margin: 0 !important; width: 400px; resize: vertical;} .twRaped > span:not(.badge), .twRaped > strong, .twRaped > em {color: pink !important;} .twAway:not(:hover) * {opacity: 0.75} .twHideAway .twAway {display:none !important;}</style>');
 		$('head').append('<style type="text/css" id="twAvaStyle"></style>');
 		$('#twCollapser').on('click', function(){$('#twContent').toggleClass('twShowLess');$('#tripwars').removeClass('twShowConfig')});
 		$('#twHideAway').on('click', function(){$('#twContent').toggleClass('twHideAway');$('#tripwars').removeClass('twShowConfig')});
 		$('#twConf').on('click', function(){$('#tripwars').toggleClass('twShowConfig')});
 		$('#tripwars').on('click', function(e){
 			var cmd = e.target.textContent, title;
-			if(e.target.nodeName != 'A') return false;
+			if(e.target.nodeName != 'A') return true;
 
 			var trip = e.target.parentNode.parentNode.dataset.trip;
 
@@ -490,13 +526,7 @@ $(function(){
 			}
 		});
 
-		savedState = JSON.stringify({
-			twBaseStats: JSON.parse(localStorage.twBaseStats || "{}"),
-			twBaseThread: localStorage.twBaseThread || curThread 
-		})
-
-		$('#twConfArea').val(savedState);
-		$('#twHash').text(md5(savedState).match(/[0-9-a-f]{4}/ig).join('-'));
+		genSaveState();
 
 		$('#twApplyConf').on('click', function(){
 			var conf = JSON.parse($('#twConfArea').val());
@@ -508,15 +538,35 @@ $(function(){
 			localStorage.twBaseThread = conf.twBaseThread;
 			baseThread = conf.twBaseThread;
 
-			savedState = JSON.stringify({
-				twBaseStats: JSON.parse(localStorage.twBaseStats || "{}"),
-				twBaseThread: localStorage.twBaseThread || curThread 
-			})
-
-			$('#twConfArea').val(savedState);
-			$('#twHash').text(md5(savedState).match(/[0-9-a-f]{4}/ig).join('-'));
-
+			genSaveState();
 			parseTripGame();
+		});
+
+		$('#twSaveStats').on('click', function(){
+			genSaveState();
+			saveAs(new Blob([strToUTF8Arr(savedState)], {type: "application/json;charset=utf-8"}), "TripWars-" +baseThread + "-" + savedStateHash +".txt");
+		});
+
+		$('#twUploadStats').on('click', function(){$('#twUploadStatsInput').click();});
+
+		$('#twUploadStatsInput').on('change', function(evt){
+			if(evt.target.files.length === 0) return false;
+			
+			var fReader = new FileReader();
+			fReader.onload = function(fE) {
+				var conf = JSON.parse(utf8ArrToStr(new Uint8Array(fE.target.result)));
+
+				tgStats = conf.twBaseStats;
+				tgPostHits = {}
+				
+				localStorage.twBaseStats = JSON.stringify(tgStats);
+				localStorage.twBaseThread = conf.twBaseThread;
+				baseThread = conf.twBaseThread;
+
+				genSaveState();
+				parseTripGame();
+			};
+			fReader.readAsArrayBuffer(evt.target.files[0]);
 		});
 
 		parseTripGame();
