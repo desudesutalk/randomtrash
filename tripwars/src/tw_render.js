@@ -1,5 +1,22 @@
+function safe_tags(str) {
+    "use strict";
+
+    if(str && typeof str === 'string'){
+        return str.replace(/&/g,'&amp;')
+          .replace(/</g,'&lt;')
+          .replace(/>/g,'&gt;')
+          .replace(/"/g,'&quot;')
+          .replace(/'/g,'&#x27;')
+          .replace(/`/g,'&grave;')
+          .replace(/\//g,'&#x2F;');
+    }
+
+    return "";
+}
+
 function renderTripGame(){
-	var pleers = [], diff, difTxt, shkvarki, t, avas = [], playa;
+	console.time('renderTripGame');
+	var pleers = [], diff, difTxt, shkvarki, t, avas = [], playa, addons = [];
 	
 	for (var property in tgStats) {
 		if (tgStats.hasOwnProperty(property)) {
@@ -20,7 +37,7 @@ function renderTripGame(){
 				playa.ava.width <= 200 && playa.ava.height <= 200 &&
 				playa.ava.width > 0 && playa.ava.height > 0 &&
 				playa.ava.thread == curThread){
-				avas.push('.tw-' + bytesToHex(strToUTF8Arr(playa.trip)) + ' img.post-image:not(:hover) {-moz-box-sizing: border-box; box-sizing: border-box; padding-left: '+playa.ava.width+'px; background: url("http://cdn.syn-ch.com/thumb'+playa.ava.src+'"); width: '+playa.ava.width+'px !important; height: '+playa.ava.height+'px  !important;}');
+				avas.push('.tw-' + bytesToHex(strToUTF8Arr(playa.trip)) + ' img.post-image:not(:hover) {-moz-box-sizing: border-box; box-sizing: border-box; padding-left: '+parseInt(playa.ava.width)+'px; background: url("http://cdn.syn-ch.com/thumb'+playa.ava.src+'"); width: '+parseInt(playa.ava.width)+'px !important; height: '+parseInt(playa.ava.height)+'px  !important;}');
 			}			
 		}
 
@@ -56,17 +73,31 @@ function renderTripGame(){
 		if(pleers[i].raped == curThread) tripClasses.push('twRaped');
 		if(pleers[i].lastThread != curThread && i !== 0) tripClasses.push('twAway');
 
-		$('#twContent').append('<div data-trip="'+pleers[i].trip+'"' + 
+		$('#twContent').append('<div data-trip="'+safe_tags(pleers[i].trip)+'"' + 
 			(i === 0? ' style="font-size:16px"':'') + ' class="'+ tripClasses.join(' ') +'">' + 
-			(pleers[i].title? '<em>'+pleers[i].title.title+'</em> ' : '') +
-			'<strong>' + pleers[i].name +'</strong><span style="color: #228854;">'+pleers[i].trip+'</span>'+
-			'<span class="fr badge"><strong>'+pleers[i].energy+'</strong></span>'+
+			(pleers[i].title? '<em>'+safe_tags(pleers[i].title.title)+'</em> ' : '') +
+			'<strong>' + safe_tags(pleers[i].name) +'</strong><span style="color: #228854;">'+safe_tags(pleers[i].trip)+'</span>'+
+			'<span class="fr badge"><strong>'+parseInt(pleers[i].energy)+'</strong></span>'+
 			'<span class="fr">'+difTxt+'</span>'+
 			shkvarki+
 			'<br><span class="ctrls">[<a href="javascript:;" title="пульнуть">A</a>]&nbsp;[<a href="javascript:;" title="дать шкварку">S</a>]&nbsp;[<a href="javascript:;" title="дать титул">T</a>]&nbsp;[<a href="javascript:;" title="покормить">F</a>]&nbsp;[<a href="javascript:;" title="RAEP!">R</a>]&nbsp;[<a href="javascript:;" title="новое лицо">I</a>]&nbsp;[<a href="javascript:;" title="КУДАХ-БАБАХ!">K</a>]</span>'+
 			'</div>');
 		tgStats[pleers[i].trip].prev = pleers[i].energy;
+
+		if(pleers[i].lastThread == curThread){
+			if(pleers[i].title){
+				addons.push('.tw-' + bytesToHex(strToUTF8Arr(playa.trip)) + ' label span.name:before {font-style: italic; content: "'+ safe_tags(pleers[i].title.title) +' "}');
+			}
+
+			if(pleers[i].energy > 0){
+				addons.push('.tw-' + bytesToHex(strToUTF8Arr(playa.trip)) + ' label span.trip:after {color: white; background: #3db; padding: 3px; border-radius: 10px; font-size: 10px; margin-left: 5px; content: "'+ parseInt(pleers[i].energy) +'"}');
+			}
+		}
 	}
 	$('head #twAvaStyle').remove();
 	$('head').append('<style type="text/css" id="twAvaStyle">'+avas.join(' ')+'</style>');
+
+	$('head #twIntroAddons').remove();
+	$('head').append('<style type="text/css" id="twIntroAddons">'+addons.join(' ')+'</style>');
+	console.timeEnd('renderTripGame');
 }

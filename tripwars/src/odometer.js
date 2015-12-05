@@ -1,5 +1,5 @@
 function odometer() {
-	var posts = document.querySelectorAll('form div.post.reply'),
+	var posts = document.querySelectorAll('form div.post.reply:not(.de-pview)'),
 		i, lastPost, lastTime, qhPost, qhTime, qhNum = 0;
 
 	if (posts.length > 1) {

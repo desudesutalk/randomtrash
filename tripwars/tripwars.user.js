@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.24
+// @version      0.0.25
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -126,7 +126,7 @@ var strToUTF8Arr = function(sDOMStr) {
 };
 
 function odometer() {
-	var posts = document.querySelectorAll('form div.post.reply'),
+	var posts = document.querySelectorAll('form div.post.reply:not(.de-pview)'),
 		i, lastPost, lastTime, qhPost, qhTime, qhNum = 0;
 
 	if (posts.length > 1) {
@@ -388,8 +388,25 @@ function parseTripGame(){
 	}
 }
 
+function safe_tags(str) {
+    "use strict";
+
+    if(str && typeof str === 'string'){
+        return str.replace(/&/g,'&amp;')
+          .replace(/</g,'&lt;')
+          .replace(/>/g,'&gt;')
+          .replace(/"/g,'&quot;')
+          .replace(/'/g,'&#x27;')
+          .replace(/`/g,'&grave;')
+          .replace(/\//g,'&#x2F;');
+    }
+
+    return "";
+}
+
 function renderTripGame(){
-	var pleers = [], diff, difTxt, shkvarki, t, avas = [], playa;
+	console.time('renderTripGame');
+	var pleers = [], diff, difTxt, shkvarki, t, avas = [], playa, addons = [];
 	
 	for (var property in tgStats) {
 		if (tgStats.hasOwnProperty(property)) {
@@ -410,7 +427,7 @@ function renderTripGame(){
 				playa.ava.width <= 200 && playa.ava.height <= 200 &&
 				playa.ava.width > 0 && playa.ava.height > 0 &&
 				playa.ava.thread == curThread){
-				avas.push('.tw-' + bytesToHex(strToUTF8Arr(playa.trip)) + ' img.post-image:not(:hover) {-moz-box-sizing: border-box; box-sizing: border-box; padding-left: '+playa.ava.width+'px; background: url("http://cdn.syn-ch.com/thumb'+playa.ava.src+'"); width: '+playa.ava.width+'px !important; height: '+playa.ava.height+'px  !important;}');
+				avas.push('.tw-' + bytesToHex(strToUTF8Arr(playa.trip)) + ' img.post-image:not(:hover) {-moz-box-sizing: border-box; box-sizing: border-box; padding-left: '+parseInt(playa.ava.width)+'px; background: url("http://cdn.syn-ch.com/thumb'+playa.ava.src+'"); width: '+parseInt(playa.ava.width)+'px !important; height: '+parseInt(playa.ava.height)+'px  !important;}');
 			}			
 		}
 
@@ -446,19 +463,33 @@ function renderTripGame(){
 		if(pleers[i].raped == curThread) tripClasses.push('twRaped');
 		if(pleers[i].lastThread != curThread && i !== 0) tripClasses.push('twAway');
 
-		$('#twContent').append('<div data-trip="'+pleers[i].trip+'"' + 
+		$('#twContent').append('<div data-trip="'+safe_tags(pleers[i].trip)+'"' + 
 			(i === 0? ' style="font-size:16px"':'') + ' class="'+ tripClasses.join(' ') +'">' + 
-			(pleers[i].title? '<em>'+pleers[i].title.title+'</em> ' : '') +
-			'<strong>' + pleers[i].name +'</strong><span style="color: #228854;">'+pleers[i].trip+'</span>'+
-			'<span class="fr badge"><strong>'+pleers[i].energy+'</strong></span>'+
+			(pleers[i].title? '<em>'+safe_tags(pleers[i].title.title)+'</em> ' : '') +
+			'<strong>' + safe_tags(pleers[i].name) +'</strong><span style="color: #228854;">'+safe_tags(pleers[i].trip)+'</span>'+
+			'<span class="fr badge"><strong>'+parseInt(pleers[i].energy)+'</strong></span>'+
 			'<span class="fr">'+difTxt+'</span>'+
 			shkvarki+
 			'<br><span class="ctrls">[<a href="javascript:;" title="пульнуть">A</a>]&nbsp;[<a href="javascript:;" title="дать шкварку">S</a>]&nbsp;[<a href="javascript:;" title="дать титул">T</a>]&nbsp;[<a href="javascript:;" title="покормить">F</a>]&nbsp;[<a href="javascript:;" title="RAEP!">R</a>]&nbsp;[<a href="javascript:;" title="новое лицо">I</a>]&nbsp;[<a href="javascript:;" title="КУДАХ-БАБАХ!">K</a>]</span>'+
 			'</div>');
 		tgStats[pleers[i].trip].prev = pleers[i].energy;
+
+		if(pleers[i].lastThread == curThread){
+			if(pleers[i].title){
+				addons.push('.tw-' + bytesToHex(strToUTF8Arr(playa.trip)) + ' label span.name:before {font-style: italic; content: "'+ safe_tags(pleers[i].title.title) +' "}');
+			}
+
+			if(pleers[i].energy > 0){
+				addons.push('.tw-' + bytesToHex(strToUTF8Arr(playa.trip)) + ' label span.trip:after {color: white; background: #3db; padding: 3px; border-radius: 10px; font-size: 10px; margin-left: 5px; content: "'+ parseInt(pleers[i].energy) +'"}');
+			}
+		}
 	}
 	$('head #twAvaStyle').remove();
 	$('head').append('<style type="text/css" id="twAvaStyle">'+avas.join(' ')+'</style>');
+
+	$('head #twIntroAddons').remove();
+	$('head').append('<style type="text/css" id="twIntroAddons">'+addons.join(' ')+'</style>');
+	console.timeEnd('renderTripGame');
 }
 
 var tbEvents = false,
@@ -490,7 +521,6 @@ function genSaveState(){
 	});
 	savedStateHash = md5(savedState);
 
-	$('#twConfArea').val(savedState);
 	$('#twHash').text(savedStateHash.match(/[0-9-a-f]{4}/ig).join('-'));
 }
 
@@ -510,7 +540,7 @@ $(function(){
 			baseThread = localStorage.twBaseThread;
 		}
 
-		$('body').append('<div id="tripwars"><span id="twCollapser"><i class="fa fa-minus-square"></i></span> <span id="twConf"><i class="fa fa-cog"></i></span> <span id="twHideAway"><i class="fa fa-eye"></i></span><span id="odometer" style="float: right;"></span><div id="twContent"></div><div id="twConfig"><h1>TripWars v'+(typeof GM_info !== 'undefined' ? GM_info.script.version : GM_getMetadata("version"))+'</h1><br><p style="text-align: center;">Хеш статов: <strong id="twHash"></strong><br><button id="twSaveStats" style="float: left;"><i class="fa fa-download"></i> Скачать файл статсов</button><button id="twUploadStats" style="float: right;"><i class="fa fa-upload"></i> Загрузить файл статсов</button><input type="file" id="twUploadStatsInput" style="display: none;"><br></p><textarea id="twConfArea"></textarea><button id="twApplyConf">применить</button></div></div>');
+		$('body').append('<div id="tripwars"><span id="twCollapser"><i class="fa fa-minus-square"></i></span> <span id="twConf"><i class="fa fa-cog"></i></span> <span id="twHideAway"><i class="fa fa-eye"></i></span><span id="odometer" style="float: right;"></span><div id="twContent"></div><div id="twConfig"><h1>TripWars v'+(typeof GM_info !== 'undefined' ? GM_info.script.version : GM_getMetadata("version"))+'</h1><br><p style="text-align: center;">Хеш статов: <strong id="twHash"></strong><br><br><button id="twSaveStats" style="float: left;"><i class="fa fa-download"></i> Скачать файл статсов</button><button id="twUploadStats" style="float: right;"><i class="fa fa-upload"></i> Загрузить файл статсов</button><input type="file" id="twUploadStatsInput" style="display: none;"><br></p></div></div>');
 		$('head').append('<style type="text/css">   #tripwars { max-height: 90%; overflow-y: auto; min-width: 400px; position: fixed; top: 15px; right: 30px; background: #fff; padding: 5px; font-size: 12px; border-radius: 3px; box-shadow: 0px 0px 10px rgba(0,0,0,0.25); counter-reset: pstn; } #twContent div:before { counter-increment: pstn; content: counter(pstn) ": "; } #twContent div { padding: 5px; border-bottom: 1px solid #eee; position: relative; } #tripwars span.fr{ float: right; margin-left: 5px; } #tw0Content div:hover span.fr{ visibility: hidden; } #twContent div:hover span.ctrls{ display: block; } #twContent div span.ctrls{ display: none; } #tripwars span.badge{ color: white; background: #3db; padding: 3px; border-radius: 10px; } #tripwars br{ clear: both; } .twShowLess div { display:none; } .twShowLess div:first-child { display:block; } #twCollapser, #twConf, #twHideAway {cursor: pointer;} .twShowConfig #twContent {display: none;} #twConfig {display:none;} .twShowConfig #twConfig {display: block;} #twConfig textarea {margin: 0 !important; width: 400px; resize: vertical;} .twRaped > span:not(.badge), .twRaped > strong, .twRaped > em {color: pink !important;} .twAway:not(:hover) * {opacity: 0.75} .twHideAway .twAway {display:none !important;}</style>');
 		$('head').append('<style type="text/css" id="twAvaStyle"></style>');
 		$('#twCollapser').on('click', function(){$('#twContent').toggleClass('twShowLess');$('#tripwars').removeClass('twShowConfig');});
@@ -533,20 +563,6 @@ $(function(){
 		});
 
 		genSaveState();
-
-		$('#twApplyConf').on('click', function(){
-			var conf = JSON.parse($('#twConfArea').val());
-			
-			tgStats = conf.twBaseStats;
-			tgPostHits = {};
-			
-			localStorage.twBaseStats = JSON.stringify(tgStats);
-			localStorage.twBaseThread = conf.twBaseThread;
-			baseThread = conf.twBaseThread;
-
-			genSaveState();
-			parseTripGame();
-		});
 
 		$('#twSaveStats').on('click', function(){
 			genSaveState();
