@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchImgRepost
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.2
+// @version      0.0.3
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
