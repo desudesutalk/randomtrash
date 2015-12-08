@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchImgRepost
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.1
+// @version      0.0.2
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -295,15 +295,15 @@ $(window).ready(function() {
 				}
 
 				if (!selectedFile) {
-					if(curFileLoaded){
+					if ($('#txtimagify').attr('checked')) {
+						formData.append("file", imageFromText($form.find('textarea#body').val()), 'TEXT.JPEG');
+					}else if(curFileLoaded){
 						var i, tail = new Uint8Array(8), fileData, ext;
 						for (i = 0; i < tail.length; i++) tail[i] = Math.floor(Math.random() * 255);
 
 						fileData = [curFileLoaded, tail];
 
 						formData.append("file", new Blob(fileData, {type: curFileData.type}),curFileData.name);
-					}else if ($('#txtimagify').attr('checked')) {
-						formData.append("file", imageFromText($form.find('textarea#body').val()), 'TEXT.JPEG');
 					}
 					_sendAjax();
 				} else {

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.27
+// @version      0.0.28
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -470,8 +470,15 @@ function renderTripGame(){
 			'<span class="fr badge"><strong>'+parseInt(pleers[i].energy)+'</strong></span>'+
 			'<span class="fr">'+difTxt+'</span>'+
 			shkvarki+
-			'<br><span class="ctrls">[<a href="javascript:;" title="пульнуть">A</a>]&nbsp;[<a href="javascript:;" title="дать шкварку">S</a>]&nbsp;[<a href="javascript:;" title="дать титул">T</a>]&nbsp;[<a href="javascript:;" title="покормить">F</a>]&nbsp;[<a href="javascript:;" title="RAEP!">R</a>]&nbsp;[<a href="javascript:;" title="новое лицо">I</a>]&nbsp;[<a href="javascript:;" title="КУДАХ-БАБАХ!">K</a>]</span>'+
-			'</div>');
+			'<br><span class="ctrls">'+
+			'[<a href="javascript:;" title="пульнуть">A</a>]'+
+			'&nbsp;[<a href="javascript:;" title="дать шкварку">S</a>]'+
+			'&nbsp;[<a href="javascript:;" title="дать титул за ' + (pleers[i].title ? 2 * pleers[i].title.cost : 10) + ' энергии">T</a>]'+
+			'&nbsp;[<a href="javascript:;" title="покормить">F</a>]'+
+			'&nbsp;[<a href="javascript:;" title="RAEP!">R</a>]'+
+			'&nbsp;[<a href="javascript:;" title="новое лицо">I</a>]'+
+			'&nbsp;[<a href="javascript:;" title="КУДАХ-БАБАХ!">K</a>]'+
+			'</span></div>');
 		tgStats[pleers[i].trip].prev = pleers[i].energy;
 
 		if(pleers[i].lastThread == curThread){
@@ -574,7 +581,7 @@ $(function(){
 
 		$('#twSaveStats').on('click', function(){
 			genSaveState();
-			saveAs(new Blob([strToUTF8Arr(savedState)], {type: "application/json;charset=utf-8"}), "TripWars-" +baseThread + "-" + savedStateHash +".txt");
+			saveAs(new Blob([strToUTF8Arr(savedState)], {type: "application/json;charset=utf-8"}), "TripWars-" +localStorage.twBaseThread + "-" + savedStateHash +".txt");
 		});
 
 		$('#twUploadStats').on('click', function(){$('#twUploadStatsInput').click();});

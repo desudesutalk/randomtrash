@@ -72,7 +72,7 @@ $(function(){
 
 		$('#twSaveStats').on('click', function(){
 			genSaveState();
-			saveAs(new Blob([strToUTF8Arr(savedState)], {type: "application/json;charset=utf-8"}), "TripWars-" +baseThread + "-" + savedStateHash +".txt");
+			saveAs(new Blob([strToUTF8Arr(savedState)], {type: "application/json;charset=utf-8"}), "TripWars-" +localStorage.twBaseThread + "-" + savedStateHash +".txt");
 		});
 
 		$('#twUploadStats').on('click', function(){$('#twUploadStatsInput').click();});
