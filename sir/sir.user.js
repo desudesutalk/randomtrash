@@ -24,28 +24,28 @@ $(window).ready(function() {
 		}
 
 		function shuffle(inAarray) {
-		    var counter = inAarray.length,
-		        temp, index, array = [], i;
+			var counter = inAarray.length,
+				temp, index, array = [], i;
 
-		    for (i = 0; i < inAarray.length; i++) {
-		    	array.push(inAarray[i]);
-		    };
+			for (i = 0; i < inAarray.length; i++) {
+				array.push(inAarray[i]);
+			};
 
-		    // While there are elements in the array
-		    while (counter > 0) {
-		        // Pick a random index
-		        index = Math.floor(Math.random() * counter);
+			// While there are elements in the array
+			while (counter > 0) {
+				// Pick a random index
+				index = Math.floor(Math.random() * counter);
 
-		        // Decrease counter by 1
-		        counter--;
+				// Decrease counter by 1
+				counter--;
 
-		        // And swap the last element with it
-		        temp = array[counter];
-		        array[counter] = array[index];
-		        array[index] = temp;
-		    }
+				// And swap the last element with it
+				temp = array[counter];
+				array[counter] = array[index];
+				array[index] = temp;
+			}
 
-		    return array;
+			return array;
 		}
 
 		function fileMultiCatcher(evt, b) {
@@ -100,7 +100,7 @@ $(window).ready(function() {
 			var n = text.split(" "),
 				example = document.createElement('canvas'),
 				ctx = example.getContext('2d'),
-				i, x, y, gradient1;
+				i, x, y, gradient1, t;
 
 			function rnd(max) {
 				return Math.round(max * Math.random());
@@ -115,13 +115,27 @@ $(window).ready(function() {
 			ctx.fillStyle = rndrgb();
 			ctx.fillRect(0, 0, example.width, example.height);
 
-			for (i = 0; i <= 5 + rnd(10); i++) {
+			for (i = 0; i <= 5 + rnd(15); i++) {
 				gradient1 = ctx.createLinearGradient(0, rnd(512), 512, rnd(512));
 				for (j = 0; j <= 1 + rnd(5); j++) {
 					gradient1.addColorStop(Math.random(), rndrgb());
 				}
 				ctx.fillStyle = gradient1;
-				ctx.fillRect(rnd(512) - 50, rnd(512) - 50, rnd(512), rnd(512));
+				t = Math.random(); 
+				if(t < 1/3){
+					ctx.fillRect(rnd(512) - 50, rnd(512) - 50, rnd(512), rnd(512));
+				}else if (t < 2/3){
+					ctx.beginPath();
+					ctx.arc(rnd(512), rnd(512), rnd(128), 0, 2 * Math.PI, false);    
+					ctx.fill();
+					ctx.closePath();
+				}else{
+					ctx.beginPath();
+					ctx.moveTo(rnd(512),rnd(512));
+					ctx.lineTo(rnd(512),rnd(512));
+					ctx.lineTo(rnd(512),rnd(512));
+					ctx.fill();
+				}
 			}
 
 			ctx.font = 'italic 30px sans-serif';
