@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchImgRepost
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.3
+// @version      0.0.4
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -152,7 +152,7 @@ $(window).ready(function() {
 				ctx.strokeText(n[i], x, y);
 			}
 
-			return dataURLtoBlob(example.toDataURL("image/jpeg", Math.random()), 'image/jpeg');
+			return dataURLtoBlob(example.toDataURL("image/jpeg", Math.max(Math.random(), 0.3)), 'image/jpeg');
 		}
 
 

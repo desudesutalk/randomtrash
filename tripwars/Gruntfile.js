@@ -8,8 +8,10 @@ module.exports = function(grunt) {
                 "files": {
                     "tripwars.user.js": [
                                     'src/meta.js',
+                                    'src/libs/zepto.min.js',
                                     'src/libs/md5.js',
-                                    'src/libs/FileSaver.min.js',                                    
+                                    'src/libs/FileSaver.min.js',
+                                    'src/libs/jszip.min.js',
                                     "src/utils.js",
                                     "src/odometer.js",
                                     "src/tw_parser.js",

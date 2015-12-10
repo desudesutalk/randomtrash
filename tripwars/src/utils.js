@@ -85,3 +85,83 @@ var strToUTF8Arr = function(sDOMStr) {
 	}
 	return aBytes;
 };
+
+var getHost = function(url){
+    "use strict";
+    var a = document.createElement('a');
+    a.href = url;
+    return {href: a.href, host: a.host, crossdomain: location.host.toLowerCase() != a.host.toLowerCase()};
+};
+
+var getURLasAB = function(rawURL, cb) {
+    "use strict";
+
+    var url = getHost(rawURL);
+
+    /*jshint newcap: false  */
+    if (typeof GM_xmlhttpRequest === "function") {        
+        if(navigator.userAgent.match(/Chrome\/([\d.]+)/)){
+            GM_xmlhttpRequest({
+                method: "GET",
+                url: url.href,                
+                responseType: "arraybuffer",
+                onload: function(oEvent) {
+                    cb(oEvent.response, new Date(0));
+                },
+                onerror: function(oEvent) {                    
+                    cb(null, new Date());
+                }
+            });
+        }else{
+            GM_xmlhttpRequest({
+                method: "GET",
+                url: url.href,
+                overrideMimeType: "text/plain; charset=x-user-defined",
+                onload: function(oEvent) {
+                    var ff_buffer = stringToByteArray(oEvent.responseText || oEvent.response);
+                    cb(ff_buffer.buffer, new Date());
+                },
+                onerror: function(oEvent) {                    
+                    cb(null, new Date());
+                }
+            });
+        }
+    }else{
+        var oReq = new XMLHttpRequest();
+
+        oReq.open("GET", url.href, true);
+        oReq.responseType = "arraybuffer";
+        oReq.onload = function(oEvent) {
+            cb(oReq.response, new Date(oEvent.target.getResponseHeader('Last-Modified')));
+        };
+        oReq.onerror = function(oEvent) {
+            cb(null, new Date());
+        };
+        oReq.send(null);        
+    }
+};
+
+var stringToByteArray = function(str) {
+    "use strict";
+
+    var array = new Uint8Array(str.length), i, il;
+
+    for (i = 0, il = str.length; i < il; ++i) {
+        array[i] = str.charCodeAt(i) & 0xff;
+    }
+
+    return array;
+};
+
+// Thanks, Y0ba!
+// Read more: https://github.com/greasemonkey/greasemonkey/issues/2034#issuecomment-70285613
+function getUint8Array(data, i, len) {
+    "use strict";
+    var rv;
+    if(typeof i === 'undefined') {
+        rv = new Uint8Array(data);
+        return rv instanceof Uint8Array ? rv : new unsafeWindow.Uint8Array(data);
+    }
+    rv = new Uint8Array(data, i, len);
+    return rv instanceof Uint8Array ? rv : new unsafeWindow.Uint8Array(data, i, len);
+}

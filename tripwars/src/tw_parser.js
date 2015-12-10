@@ -14,6 +14,9 @@ function killTrip(trip){
 	}
 }
 
+var imRegEx = /thumb(\/\d+\/\d+\/\d+\/\d+-[0-9a-f]+\.png$)/i,
+    zipRegEx = /\/\d+\/\d+\/\d+\/\d+-[0-9a-f]+\.zip$/i;
+
 function parsePostResults(p, isOp){
 	var file = p.querySelector('.file-info a'),
 		trip = p.querySelector('.intro span.trip'),
@@ -24,9 +27,21 @@ function parsePostResults(p, isOp){
 		pid = p.id.replace('reply_', ''),
 		hits = [], rnd, i, j, r, m, t, atck, tCost, e;
 
+	p.classList.add('twParsed');
+
+	if(file && file.href.match(zipRegEx)){
+		if(!p.querySelector('.twStatsLoader')){
+			$(p).find('div.body').before('<div class="twStatsLoader btn btn-primary"><i class="fa fa-upload"></i> Загрузить файл статсов</div>');
+		}
+	}
+
 	if(!trip) return null;
 	trip = trip.textContent.substring(0,12);
 	name = name.textContent;
+
+/*	if(!p.querySelector('.twTripCommand')){
+		$(p).find('.intro .delete').after('<button class="twTripCommand"><i class="fa fa-tachometer"></i></button>');
+	}*/
 
 	if(!tgPostHits[pid]){
 		tgPostHits[pid] = {from: trip, hits:{}};
@@ -37,7 +52,7 @@ function parsePostResults(p, isOp){
 	p.classList.add('tw-' + bytesToHex(strToUTF8Arr(trip)));
 
 	if(img){
-		m = img.src.match(/thumb(\/\d+\/\d+\/\d+\/\d+-[0-9a-f]+\.png$)/i);
+		m = img.src.match(imRegEx);
 		if(m){
 			imgSrc = m[1];
 			imgW = parseInt(img.style.width.replace('px',''));
@@ -167,16 +182,19 @@ function parsePostResults(p, isOp){
 	return true;
 }
 
-function parseTripGame(){
-	var posts = document.querySelectorAll('form div.post.reply'),
+function parseTripGame(callFrom){
+	console.log('parseThread called from: ' + callFrom);
+	console.time('parseThread');
+	var posts = document.querySelectorAll('form div.post.reply:not(.twParsed)'),
+		op = document.querySelector('form div.post.op:not(.twParsed)'),
 		i;
 
-	parsePostResults(document.querySelector('form div.post.op'), true);
+	if(op) parsePostResults(op , true);
 
 	for (i = 0; i < posts.length && i < 500; i++) {
 		parsePostResults(posts[i]);
 	}
-
+	
 	renderTripGame();
 
 	if(posts.length >= 500){
@@ -193,4 +211,6 @@ function parseTripGame(){
 			$('#twHash').text(md5(savedState).match(/[0-9-a-f]{4}/ig).join('-'));
 		}
 	}
+
+	console.timeEnd('parseThread');
 }
