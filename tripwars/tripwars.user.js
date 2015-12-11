@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.29
+// @version      0.0.30
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -491,7 +491,7 @@ function parseTripGame(callFrom){
 	
 	renderTripGame();
 
-	if(posts.length >= 500){
+	if(document.querySelectorAll('form div.post.reply').length >= 500){
 		if(!localStorage.twBaseThread || curThread > localStorage.twBaseThread){
 			localStorage.twBaseThread = curThread;
 			localStorage.twBaseStats = JSON.stringify(tgStats);
