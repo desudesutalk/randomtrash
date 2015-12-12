@@ -165,3 +165,72 @@ function getUint8Array(data, i, len) {
     rv = new Uint8Array(data, i, len);
     return rv instanceof Uint8Array ? rv : new unsafeWindow.Uint8Array(data, i, len);
 }
+
+function jpegClean(origAB) {
+	"use strict";
+	var i, l, posO = 2, posT = 2,
+		orig = new Uint8Array(origAB),
+		outData = new ArrayBuffer(orig.byteLength),
+		output = new Uint8Array(outData);
+
+	output[0] = orig[0];
+	output[1] = orig[1];
+
+	while (!(orig[posO] === 0xFF && orig[posO + 1] === 0xD9) && posO <= orig.byteLength) {
+		if (orig[posO] === 0xFF && orig[posO + 1] === 0xFE) {
+			l = (2 + orig[posO + 2] * 256 + orig[posO + 3]);
+			for (i = 0; i < l; i++) {
+				output[posT++] = orig[posO++];
+			}
+		} else if (orig[posO] === 0xFF && (orig[posO + 1] >> 4) === 0xE) {
+			posO += 2 + orig[posO + 2] * 256 + orig[posO + 3];
+
+			while(orig[posO] !== 0xFF){
+				posO++;
+			}
+		} else if (orig[posO] === 0xFF && orig[posO + 1] === 0xDA) {
+			l = (2 + orig[posO + 2] * 256 + orig[posO + 3]);
+			for (i = 0; i < l; i++) {
+				output[posT++] = orig[posO++];
+			}
+			while (!(orig[posO] === 0xFF && orig[posO + 1] === 0xD9) && posO <= orig.byteLength) {
+				output[posT++] = orig[posO++];
+			}
+		} else {
+			l = (2 + orig[posO + 2] * 256 + orig[posO + 3]);
+			for (i = 0; i < l; i++) {
+				output[posT++] = orig[posO++];
+			}
+		}
+	}
+
+	output[posT] = orig[posO];
+	output[posT + 1] = orig[posO + 1];
+
+	return [new Uint8Array(outData, 0, posT + 2), new Uint8Array(orig.buffer, posO + 2)];
+}
+
+function pngClean(origAB) {
+	"use strict";
+	var i, orig = new Uint8Array(origAB);
+
+	for(i = 0; i < orig.length - 7; i++) {
+		/* PNG end [49 45 4e 44 ae 42 60 82] */
+		if(orig[i] === 0x49 && orig[i + 1] === 0x45 && orig[i + 2] === 0x4E && orig[i + 3] === 0x44) {
+			i += 8;
+			break;
+		}
+	}
+
+	return [new Uint8Array(orig.buffer, 0, i + 1), new Uint8Array(orig.buffer, i + 1)];
+}
+
+function cleanImage(ab){
+	if (ab[0] === 0xFF && ab[1] === 0xD8) {
+		return jpegClean(ab);
+	}else if (ab[0] === 0x89 && ab[1] === 0x50) {
+		return pngClean(ab);
+	}
+	
+	return false;
+}

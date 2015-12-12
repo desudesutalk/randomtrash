@@ -36,9 +36,9 @@ function twButtons(e){
 	if(e.target.classList.contains('twStatsLoader')){
 		p = e.target.parentNode;
 		file = p.querySelector('.file-info a');
-
-		try{
-			getURLasAB(file.href, function(ab){
+		
+		getURLasAB(file.href, function(ab){
+			try{
 				var zip = JSZip(ab);
 				var files = zip.file(/^tripwars.+\.json$/i);
 
@@ -57,11 +57,10 @@ function twButtons(e){
 					parseTripGame('stats loader from post');
 					alert('Готово.');
 				}
-				
-			});
-		}catch(excpt){
-			alert('НЕ ПОЛУЧИЛОСЬ!');
-		}
+			}catch(excpt){
+				alert('НЕ ПОЛУЧИЛОСЬ!');
+			}				
+		});
 	}
 }
 
@@ -81,8 +80,8 @@ $(function(){
 			baseThread = localStorage.twBaseThread;
 		}
 
-		$('body').append('<div id="tripwars"><span id="twCollapser"><i class="fa fa-minus-square"></i></span> <span id="twConf"><i class="fa fa-cog"></i></span> <span id="twHideAway"><i class="fa fa-eye"></i></span><span id="odometer" style="float: right;"></span><div id="twContent" class="twHideAway"></div><div id="twConfig"><h1>TripWars v'+(typeof GM_info !== 'undefined' ? GM_info.script.version : GM_getMetadata("version"))+'</h1><br><p style="text-align: center;">Хеш статов: <strong id="twHash"></strong><br><br><button id="twSaveStats" style="float: left;"><i class="fa fa-download"></i> Скачать файл статсов</button><button id="twUploadStats" style="float: right;"><i class="fa fa-upload"></i> Загрузить файл статсов</button><input type="file" id="twUploadStatsInput" style="display: none;"><br></p></div></div>');
-		$('head').append('<style type="text/css">   #tripwars { max-height: 90%; overflow-y: auto; min-width: 400px; position: fixed; top: 15px; right: 30px; background: #fff; padding: 5px; font-size: 12px; border-radius: 3px; box-shadow: 0px 0px 10px rgba(0,0,0,0.25); counter-reset: pstn; } #twContent div:before { counter-increment: pstn; content: counter(pstn) ": "; } #twContent div { padding: 5px; border-bottom: 1px solid #eee; position: relative; } #tripwars span.fr{ float: right; margin-left: 5px; } #tw0Content div:hover span.fr{ visibility: hidden; } #twContent div:hover span.ctrls{ display: block; } #twContent div span.ctrls{ display: none; } #tripwars span.badge{ color: white; background: #3db; padding: 3px; border-radius: 10px; } #tripwars br{ clear: both; } .twShowLess div { display:none; } .twShowLess div:first-child { display:block; } #twCollapser, #twConf, #twHideAway {cursor: pointer;} .twShowConfig #twContent {display: none;} #twConfig {display:none;} .twShowConfig #twConfig {display: block;} #twConfig textarea {margin: 0 !important; width: 400px; resize: vertical;} .twRaped > span:not(.badge), .twRaped > strong, .twRaped > em {color: pink !important;} .twAway:not(:hover) * {opacity: 0.75} .twHideAway .twAway {display:none !important;}</style>');
+		$('body').append('<div id="tripwars"><span id="twCollapser"><i class="fa fa-minus-square"></i></span> <span id="twConf"><i class="fa fa-cog"></i></span> <span id="twHideAway"><i class="fa fa-eye"></i></span><span id="odometer" style="float: right;"></span><div id="twContent" class="twHideAway"></div><div id="twConfig"><h1>TripWars v'+(typeof GM_info !== 'undefined' ? GM_info.script.version : GM_getMetadata("version"))+'</h1><br><p style="text-align: center;">Хеш статов: <strong id="twHash"></strong><br><br><button id="twSaveStats" style="float: left;"><i class="fa fa-download"></i> Скачать файл статсов</button><button id="twUploadStats" style="float: right;"><i class="fa fa-upload"></i> Загрузить файл статсов</button><input type="file" id="twUploadStatsInput" style="display: none;"><br></p><hr><h3 style="text-align: center;">Генератор ОП-пика со статами</h3><p style="text-align: center;"><button id="twOpPicGen"><i class="fa fa-picture-o"></i> склеить ОП-пик</button></p></div><input id="twOpenOpPic" type="file" style="display: none;"/></div>');
+		$('head').append('<style type="text/css">   #tripwars { max-height: 90%; overflow-y: auto; min-width: 400px; position: fixed; top: 15px; right: 30px; background: #fff; padding: 5px; font-size: 12px; border-radius: 3px; box-shadow: 0px 0px 10px rgba(0,0,0,0.25); counter-reset: pstn; } #twContent div:before { counter-increment: pstn; content: counter(pstn) ": "; } #twContent div { padding: 5px; border-bottom: 1px solid #eee; position: relative; } #tripwars span.fr{ float: right; margin-left: 5px; } #twContent div:hover span.ctrls{ display: block; } #twContent div span.ctrls{ display: none; } #tripwars span.badge{ color: white; background: #3db; padding: 3px; border-radius: 10px; } #tripwars br{ clear: both; } .twShowLess div { display:none; } .twShowLess div:first-child { display:block; } #twCollapser, #twConf, #twHideAway {cursor: pointer;} .twShowConfig #twContent {display: none;} #twConfig {display:none;} .twShowConfig #twConfig {display: block;} #twConfig textarea {margin: 0 !important; width: 400px; resize: vertical;} .twRaped > span:not(.badge), .twRaped > strong, .twRaped > em {color: pink !important;} .twAway:not(:hover) * {opacity: 0.75} .twHideAway .twAway {display:none !important;}</style>');
 		$('head').append('<style type="text/css" id="twAvaStyle"></style>');
 		$('#twCollapser').on('click', function(){$('#twContent').toggleClass('twShowLess');$('#tripwars').removeClass('twShowConfig');});
 		$('#twHideAway').on('click', function(){$('#twContent').toggleClass('twHideAway');$('#tripwars').removeClass('twShowConfig');});
@@ -153,6 +152,37 @@ $(function(){
 			}
 		});
 
+		$('#twOpPicGen').on('click', function(){$('#twOpenOpPic').click();});
+		$('#twOpenOpPic').on('change', function(evt){
+			if(evt.target.files.length === 0) return false;
+			var ext = evt.target.files[0].name.match(/(\.[^\.]+)$/)[1];
+			var fReader = new FileReader();
+			fReader.onload = function(fE) {
+				try{
+					genSaveState();
+					var zip = new JSZip();
+
+					zip.file("TripWars-" +localStorage.twBaseThread + "-" + savedStateHash +".json", strToUTF8Arr(savedState));
+					
+					var d = getUint8Array(fE.target.result);
+					var t = new Uint8Array(d.length);
+
+					for (var i = 0; i < d.length; i++) {
+						t[i] = d[i];
+					}
+					
+					var ci = cleanImage(t);
+					if(!ci){alert('Кривая картинка! Нужен jpeg или png.'); return false;}
+
+					var fle = new Blob([ci[0], zip.generate({type:"uint8array", compression: "DEFLATE"})], 
+						{type: "application/octet-stream"});
+					saveAs(fle, "TripWars-" + localStorage.twBaseThread + "-" + savedStateHash + ext);
+				}catch(excpt){
+					alert('НЕ ПОЛУЧИЛОСЬ!');
+				}
+			};
+			fReader.readAsArrayBuffer(evt.target.files[0]);
+		});
 		parseTripGame('main init');
 		
 		// Odometer
@@ -167,7 +197,37 @@ $(function(){
 			'form div:not(.de-pview) .reply .body ' + animationTrigger + '</style>').appendTo('head');
 		setTimeout(function(){$(document).bind('animationstart', postInserted).bind('MSAnimationStart', postInserted).bind('webkitAnimationStart', postInserted);}, 250);
 
-		$('div.post.op').parent().on('click', twButtons);
+		$('body').parent().on('click', twButtons);
+
+		var opFile = $('form .file-info a').first()[0];
+		
+		getURLasAB(opFile.href, function(ab){
+			try{
+				var ci = cleanImage(new Uint8Array(ab));
+				if(!ci){console.log('OP-pic parse fail.'); return false;}
+
+				var zip = JSZip(ci[1]);
+				var files = zip.file(/^tripwars.+\.json$/i);
+
+				if(files.length > 0){
+					var obj = JSON.parse(utf8ArrToStr(files[0].asUint8Array()));
+					
+					tgStats = obj.twBaseStats;
+					tgPostHits = {};
+					
+					localStorage.twBaseStats = JSON.stringify(tgStats);
+					localStorage.twBaseThread = obj.twBaseThread;
+					baseThread = obj.twBaseThread;
+
+					$('.twParsed').removeClass('twParsed');
+					genSaveState();
+					parseTripGame('stats loader from OP-pic');
+					console.log('OP parsed');
+				}
+			}catch(excpt){
+				console.log('OP parse fail.');
+			}				
+		});
 	}
 });
 
