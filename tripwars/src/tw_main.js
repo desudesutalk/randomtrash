@@ -22,11 +22,10 @@ var curThread, baseThread, savedState, savedStateHash;
 
 function genSaveState(){
 	savedState = JSON.stringify({
-		twBaseStats: JSON.parse(localStorage.twBaseStats || "{}"),
-		twBaseThread: localStorage.twBaseThread || curThread 
-	});
-	savedStateHash = md5(savedState);
-
+				twBaseStats: JSON.parse(localStorage.twBaseStats || "{}"),
+				twBaseThread: localStorage.twBaseThread || curThread 
+			});
+	savedStateHash = hashStats();
 	$('#twHash').text(savedStateHash.match(/[0-9-a-f]{4}/ig).join('-'));
 }
 

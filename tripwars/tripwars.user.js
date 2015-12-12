@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.36
+// @version      0.0.37
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -287,7 +287,7 @@ function pngClean(origAB) {
 	}
 
 	if(i < orig.length){
-		return [new Uint8Array(orig.buffer, 0, i), new Uint8Array(orig.buffer, i + 1)];
+		return [new Uint8Array(orig.buffer, 0, i), new Uint8Array(orig.buffer, i)];
 	}else{
 		return [new Uint8Array(orig.buffer, 0, i), []];
 	}
@@ -576,9 +576,9 @@ function parseTripGame(callFrom){
 				twBaseStats: JSON.parse(localStorage.twBaseStats || "{}"),
 				twBaseThread: localStorage.twBaseThread || curThread 
 			});
+			savedStateHash = hashStats();
 
-			$('#twConfArea').val(savedState);
-			$('#twHash').text(md5(savedState).match(/[0-9-a-f]{4}/ig).join('-'));
+			$('#twHash').text(savedStateHash.match(/[0-9-a-f]{4}/ig).join('-'));
 		}
 	}
 
@@ -589,9 +589,7 @@ function parseTripGame(callFrom){
 function applyStats(obj){
 	if(!obj.twBaseThread || !obj.twBaseStats) throw('Stats file parse error');
 
-	baseThread = obj.twBaseThread;
-
-	tgStats = {};
+	var newTgStats = {};
 
 	for (var t in obj.twBaseStats) {
 		
@@ -606,9 +604,37 @@ function applyStats(obj){
 		
 		if(obj.twBaseStats[t].energy <= 10) continue;
 				
-		tgStats[t] = obj.twBaseStats[t];
+		newTgStats[t] = obj.twBaseStats[t];
 	}
+
+	baseThread = obj.twBaseThread;
+	tgStats = newTgStats;
 }
+
+function hashStats(){
+	var finalStr = localStorage.twBaseThread || curThread,
+		stats = JSON.parse(localStorage.twBaseStats || "{}"),
+		trips = Object.keys(stats),
+		i, p;
+
+		for (i = 0; i < trips.length; i++) {
+			p = stats[trips[i]];
+
+			finalStr += '[' +trips[i] + '|'	+ p.name + '|' + p.energy + '|' + p.lastThread + '|';
+			
+			if(p.title) finalStr += +p.title.title + '|' + p.title.from + '|' + p.title.cost + '|';
+
+			finalStr += Object.keys(p.shkvarki).sort().join('|') + '|';
+
+			if(p.nipaBomber) finalStr += 'nipaBomber|';
+			if(p.rikaWiped) finalStr += 'rikaWiped|';
+					 
+			finalStr += ']';
+		}
+
+		return md5(utf8ArrToStr(finalStr));
+}
+
 function safe_tags(str) {
     "use strict";
 
@@ -751,11 +777,10 @@ var curThread, baseThread, savedState, savedStateHash;
 
 function genSaveState(){
 	savedState = JSON.stringify({
-		twBaseStats: JSON.parse(localStorage.twBaseStats || "{}"),
-		twBaseThread: localStorage.twBaseThread || curThread 
-	});
-	savedStateHash = md5(savedState);
-
+				twBaseStats: JSON.parse(localStorage.twBaseStats || "{}"),
+				twBaseThread: localStorage.twBaseThread || curThread 
+			});
+	savedStateHash = hashStats();
 	$('#twHash').text(savedStateHash.match(/[0-9-a-f]{4}/ig).join('-'));
 }
 
