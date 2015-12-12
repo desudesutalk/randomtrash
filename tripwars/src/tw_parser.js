@@ -118,7 +118,7 @@ function parsePostResults(p, isOp){
 			tgStats[trip].energy -= 100;
 		}
 		
-		if(m[1].toUpperCase() == 'S' && tgStats[trip].energy > 5 && tgStats[m[4]] && !tgStats[m[4]].shkvarki[trip]){
+		if(m[1].toUpperCase() == 'S' && tgStats[trip].energy > 250 && tgStats[m[4]] && !tgStats[m[4]].shkvarki[trip]){
 			tgStats[trip].energy -= 5;
 			tgStats[m[4]].shkvarki[trip] = true;
 		}
@@ -213,4 +213,29 @@ function parseTripGame(callFrom){
 	}
 
 	console.timeEnd('parseThread');
+}
+
+
+function applyStats(obj){
+	if(!obj.twBaseThread || !obj.twBaseStats) throw('Stats file parse error');
+
+	baseThread = obj.twBaseThread;
+
+	tgStats = {};
+
+	for (var t in obj.twBaseStats) {
+		
+		if(curThread - parseInt(obj.twBaseStats[t].lastThread) > 50000 ) continue;
+		
+		obj.twBaseStats[t].ava = undefined;
+		delete obj.twBaseStats[t].ava;
+		obj.twBaseStats[t].raped = undefined;
+		delete obj.twBaseStats[t].raped;
+
+		obj.twBaseStats[t].energy = obj.twBaseStats[t].energy - Math.floor(obj.twBaseStats[t].energy * 0.1);
+		
+		if(obj.twBaseStats[t].energy <= 10) continue;
+				
+		tgStats[t] = obj.twBaseStats[t];
+	}
 }

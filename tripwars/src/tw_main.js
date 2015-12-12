@@ -45,7 +45,7 @@ function twButtons(e){
 				if(files.length > 0){
 					var obj = JSON.parse(utf8ArrToStr(files[0].asUint8Array()));
 					
-					tgStats = obj.twBaseStats;
+					applyStats(obj);
 					tgPostHits = {};
 					
 					localStorage.twBaseStats = JSON.stringify(tgStats);
@@ -76,7 +76,10 @@ $(function(){
 		curThread = parseInt(m[2]);
 
 		if(localStorage.twBaseThread && curThread > localStorage.twBaseThread){
-			tgStats = JSON.parse(localStorage.twBaseStats);
+			applyStats({
+				twBaseStats: JSON.parse(localStorage.twBaseStats || "{}"),
+				twBaseThread: localStorage.twBaseThread || curThread 
+			});
 			baseThread = localStorage.twBaseThread;
 		}
 
@@ -133,7 +136,7 @@ $(function(){
 					if(files.length > 0){
 						var obj = JSON.parse(utf8ArrToStr(files[0].asUint8Array()));
 						
-						tgStats = obj.twBaseStats;
+						applyStats(obj);
 						tgPostHits = {};
 						
 						localStorage.twBaseStats = JSON.stringify(tgStats);
@@ -212,7 +215,7 @@ $(function(){
 				if(files.length > 0){
 					var obj = JSON.parse(utf8ArrToStr(files[0].asUint8Array()));
 					
-					tgStats = obj.twBaseStats;
+					applyStats(obj);
 					tgPostHits = {};
 					
 					localStorage.twBaseStats = JSON.stringify(tgStats);

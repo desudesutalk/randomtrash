@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.31
+// @version      0.0.32
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -480,7 +480,7 @@ function parsePostResults(p, isOp){
 			tgStats[trip].energy -= 100;
 		}
 		
-		if(m[1].toUpperCase() == 'S' && tgStats[trip].energy > 5 && tgStats[m[4]] && !tgStats[m[4]].shkvarki[trip]){
+		if(m[1].toUpperCase() == 'S' && tgStats[trip].energy > 250 && tgStats[m[4]] && !tgStats[m[4]].shkvarki[trip]){
 			tgStats[trip].energy -= 5;
 			tgStats[m[4]].shkvarki[trip] = true;
 		}
@@ -577,6 +577,30 @@ function parseTripGame(callFrom){
 	console.timeEnd('parseThread');
 }
 
+
+function applyStats(obj){
+	if(!obj.twBaseThread || !obj.twBaseStats) throw('Stats file parse error');
+
+	baseThread = obj.twBaseThread;
+
+	tgStats = {};
+
+	for (var t in obj.twBaseStats) {
+		
+		if(curThread - parseInt(obj.twBaseStats[t].lastThread) > 50000 ) continue;
+		
+		obj.twBaseStats[t].ava = undefined;
+		delete obj.twBaseStats[t].ava;
+		obj.twBaseStats[t].raped = undefined;
+		delete obj.twBaseStats[t].raped;
+
+		obj.twBaseStats[t].energy = obj.twBaseStats[t].energy - Math.floor(obj.twBaseStats[t].energy * 0.1);
+		
+		if(obj.twBaseStats[t].energy <= 10) continue;
+				
+		tgStats[t] = obj.twBaseStats[t];
+	}
+}
 function safe_tags(str) {
     "use strict";
 
@@ -742,7 +766,7 @@ function twButtons(e){
 				if(files.length > 0){
 					var obj = JSON.parse(utf8ArrToStr(files[0].asUint8Array()));
 					
-					tgStats = obj.twBaseStats;
+					applyStats(obj);
 					tgPostHits = {};
 					
 					localStorage.twBaseStats = JSON.stringify(tgStats);
@@ -773,7 +797,10 @@ $(function(){
 		curThread = parseInt(m[2]);
 
 		if(localStorage.twBaseThread && curThread > localStorage.twBaseThread){
-			tgStats = JSON.parse(localStorage.twBaseStats);
+			applyStats({
+				twBaseStats: JSON.parse(localStorage.twBaseStats || "{}"),
+				twBaseThread: localStorage.twBaseThread || curThread 
+			});
 			baseThread = localStorage.twBaseThread;
 		}
 
@@ -830,7 +857,7 @@ $(function(){
 					if(files.length > 0){
 						var obj = JSON.parse(utf8ArrToStr(files[0].asUint8Array()));
 						
-						tgStats = obj.twBaseStats;
+						applyStats(obj);
 						tgPostHits = {};
 						
 						localStorage.twBaseStats = JSON.stringify(tgStats);
@@ -909,7 +936,7 @@ $(function(){
 				if(files.length > 0){
 					var obj = JSON.parse(utf8ArrToStr(files[0].asUint8Array()));
 					
-					tgStats = obj.twBaseStats;
+					applyStats(obj);
 					tgPostHits = {};
 					
 					localStorage.twBaseStats = JSON.stringify(tgStats);
