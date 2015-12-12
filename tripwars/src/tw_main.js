@@ -226,6 +226,8 @@ $(function(){
 					genSaveState();
 					parseTripGame('stats loader from OP-pic');
 					console.log('OP parsed');
+				}else{
+					$('#twSyncStatus').append('<strong style="color: red;"> Нет синхры в ОП-пике!</strong>');
 				}
 			}catch(excpt){
 				console.log('OP parse fail.');
