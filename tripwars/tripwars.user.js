@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.34
+// @version      0.0.35
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -287,9 +287,9 @@ function pngClean(origAB) {
 	}
 
 	if(i < orig.length){
-		return [new Uint8Array(orig.buffer, 0, i + 1), new Uint8Array(orig.buffer, i + 1)];
+		return [new Uint8Array(orig.buffer, 0, i), new Uint8Array(orig.buffer, i + 1)];
 	}else{
-		return [new Uint8Array(orig.buffer, 0, i + 1), []];
+		return [new Uint8Array(orig.buffer, 0, i), []];
 	}
 }
 

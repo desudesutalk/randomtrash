@@ -227,9 +227,9 @@ function pngClean(origAB) {
 	}
 
 	if(i < orig.length){
-		return [new Uint8Array(orig.buffer, 0, i + 1), new Uint8Array(orig.buffer, i + 1)];
+		return [new Uint8Array(orig.buffer, 0, i), new Uint8Array(orig.buffer, i + 1)];
 	}else{
-		return [new Uint8Array(orig.buffer, 0, i + 1), []];
+		return [new Uint8Array(orig.buffer, 0, i), []];
 	}
 }
 
