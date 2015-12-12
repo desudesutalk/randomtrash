@@ -207,7 +207,11 @@ function jpegClean(origAB) {
 	output[posT] = orig[posO];
 	output[posT + 1] = orig[posO + 1];
 
-	return [new Uint8Array(outData, 0, posT + 2), new Uint8Array(orig.buffer, posO + 2)];
+	if(posO + 2 < orig.length){
+		return [new Uint8Array(outData, 0, posT + 2), new Uint8Array(orig.buffer, posO + 2)];
+	}else{
+		return [new Uint8Array(outData, 0, posT + 2), []];
+	}
 }
 
 function pngClean(origAB) {
@@ -222,7 +226,11 @@ function pngClean(origAB) {
 		}
 	}
 
-	return [new Uint8Array(orig.buffer, 0, i + 1), new Uint8Array(orig.buffer, i + 1)];
+	if(i < orig.length){
+		return [new Uint8Array(orig.buffer, 0, i + 1), new Uint8Array(orig.buffer, i + 1)];
+	}else{
+		return [new Uint8Array(orig.buffer, 0, i + 1), []];
+	}
 }
 
 function cleanImage(ab){
