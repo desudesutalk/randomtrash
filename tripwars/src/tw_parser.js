@@ -123,7 +123,7 @@ function parsePostResults(p, isOp){
 			tgStats[m[4]].shkvarki[trip] = true;
 		}
 
-		if(m[1].toUpperCase() == 'T' && m[3] && tgStats[m[4]]){
+		if(m[1].toUpperCase() == 'T' && tgStats[trip].energy > 250 && m[3] && tgStats[m[4]]){
 			tCost = 10;
 			if(tgStats[m[4]].title){
 				tCost = tgStats[m[4]].title.cost * 2;
@@ -139,7 +139,7 @@ function parsePostResults(p, isOp){
 			tgStats[trip].energy -= tCost;
 		}
 
-		if(m[1].toUpperCase() == 'F' && tgStats[trip].energy >= 50 && tgStats[m[4]]){
+		if(m[1].toUpperCase() == 'F' && tgStats[trip].energy >= 250 && tgStats[m[4]]){
 			tgStats[trip].energy -= 30;
 			tgStats[m[4]].energy += 25;
 		}

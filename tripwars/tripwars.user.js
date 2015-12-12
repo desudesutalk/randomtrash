@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.33
+// @version      0.0.34
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -493,7 +493,7 @@ function parsePostResults(p, isOp){
 			tgStats[m[4]].shkvarki[trip] = true;
 		}
 
-		if(m[1].toUpperCase() == 'T' && m[3] && tgStats[m[4]]){
+		if(m[1].toUpperCase() == 'T' && tgStats[trip].energy > 250 && m[3] && tgStats[m[4]]){
 			tCost = 10;
 			if(tgStats[m[4]].title){
 				tCost = tgStats[m[4]].title.cost * 2;
@@ -509,7 +509,7 @@ function parsePostResults(p, isOp){
 			tgStats[trip].energy -= tCost;
 		}
 
-		if(m[1].toUpperCase() == 'F' && tgStats[trip].energy >= 50 && tgStats[m[4]]){
+		if(m[1].toUpperCase() == 'F' && tgStats[trip].energy >= 250 && tgStats[m[4]]){
 			tgStats[trip].energy -= 30;
 			tgStats[m[4]].energy += 25;
 		}
@@ -812,7 +812,7 @@ $(function(){
 			baseThread = localStorage.twBaseThread;
 		}
 
-		$('body').append('<div id="tripwars"><span id="twCollapser"><i class="fa fa-minus-square"></i></span> <span id="twConf"><i class="fa fa-cog"></i></span> <span id="twHideAway"><i class="fa fa-eye"></i></span><span id="odometer" style="float: right;"></span><div id="twContent" class="twHideAway"></div><div id="twConfig"><h1>TripWars v'+(typeof GM_info !== 'undefined' ? GM_info.script.version : GM_getMetadata("version"))+'</h1><br><p style="text-align: center;">Хеш статов: <strong id="twHash"></strong><br><br><button id="twSaveStats" style="float: left;"><i class="fa fa-download"></i> Скачать файл статсов</button><button id="twUploadStats" style="float: right;"><i class="fa fa-upload"></i> Загрузить файл статсов</button><input type="file" id="twUploadStatsInput" style="display: none;"><br></p><hr><h3 style="text-align: center;">Генератор ОП-пика со статами</h3><p style="text-align: center;"><button id="twOpPicGen"><i class="fa fa-picture-o"></i> склеить ОП-пик</button></p></div><input id="twOpenOpPic" type="file" style="display: none;"/></div>');
+		$('body').append('<div id="tripwars"><span id="twCollapser"><i class="fa fa-minus-square"></i></span> <span id="twConf"><i class="fa fa-cog"></i></span> <span id="twHideAway"><i class="fa fa-eye"></i></span><span id="twSyncStatus"></span><span id="odometer" style="float: right;"></span><div id="twContent" class="twHideAway"></div><div id="twConfig"><h1>TripWars v'+(typeof GM_info !== 'undefined' ? GM_info.script.version : GM_getMetadata("version"))+'</h1><br><p style="text-align: center;">Хеш статов: <strong id="twHash"></strong><br><br><button id="twSaveStats" style="float: left;"><i class="fa fa-download"></i> Скачать файл статсов</button><button id="twUploadStats" style="float: right;"><i class="fa fa-upload"></i> Загрузить файл статсов</button><input type="file" id="twUploadStatsInput" style="display: none;"><br></p><hr><h3 style="text-align: center;">Генератор ОП-пика со статами</h3><p style="text-align: center;"><button id="twOpPicGen"><i class="fa fa-picture-o"></i> склеить ОП-пик</button></p></div><input id="twOpenOpPic" type="file" style="display: none;"/></div>');
 		$('head').append('<style type="text/css">   #tripwars { max-height: 90%; overflow-y: auto; min-width: 400px; position: fixed; top: 15px; right: 30px; background: #fff; padding: 5px; font-size: 12px; border-radius: 3px; box-shadow: 0px 0px 10px rgba(0,0,0,0.25); counter-reset: pstn; } #twContent div:before { counter-increment: pstn; content: counter(pstn) ": "; } #twContent div { padding: 5px; border-bottom: 1px solid #eee; position: relative; } #tripwars span.fr{ float: right; margin-left: 5px; } #twContent div:hover span.ctrls{ display: block; } #twContent div span.ctrls{ display: none; } #tripwars span.badge{ color: white; background: #3db; padding: 3px; border-radius: 10px; } #tripwars br{ clear: both; } .twShowLess div { display:none; } .twShowLess div:first-child { display:block; } #twCollapser, #twConf, #twHideAway {cursor: pointer;} .twShowConfig #twContent {display: none;} #twConfig {display:none;} .twShowConfig #twConfig {display: block;} #twConfig textarea {margin: 0 !important; width: 400px; resize: vertical;} .twRaped > span:not(.badge), .twRaped > strong, .twRaped > em {color: pink !important;} .twAway:not(:hover) * {opacity: 0.75} .twHideAway .twAway {display:none !important;}</style>');
 		$('head').append('<style type="text/css" id="twAvaStyle"></style>');
 		$('#twCollapser').on('click', function(){$('#twContent').toggleClass('twShowLess');$('#tripwars').removeClass('twShowConfig');});
@@ -936,7 +936,7 @@ $(function(){
 		getURLasAB(opFile.href, function(ab){
 			try{
 				var ci = cleanImage(new Uint8Array(ab));
-				if(!ci){console.log('OP-pic parse fail.'); return false;}
+				if(!ci){$('#twSyncStatus').append('<strong style="color: red;"> Нет синхры в ОП-пике!</strong>');console.log('OP-pic parse fail.'); return false;}
 
 				var zip = JSZip(ci[1]);
 				var files = zip.file(/^tripwars.+\.json$/i);
@@ -958,6 +958,7 @@ $(function(){
 				}
 			}catch(excpt){
 				console.log('OP parse fail.');
+				$('#twSyncStatus').append('<strong style="color: red;"> Нет синхры в ОП-пике!</strong>');
 			}				
 		});
 	}
