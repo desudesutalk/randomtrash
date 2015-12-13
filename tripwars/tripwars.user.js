@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.42
+// @version      0.0.43
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -974,6 +974,11 @@ $(function(){
 			if(!atackr){
 				alert('Зайди в настройки и укажи свой трипкод.');
 				return false;
+			}
+
+			if(document.querySelectorAll('form div.post.reply').length >= 500){
+				alert('Бамплимит! Продолжим в следующем треде.');
+				return false;	
 			}
 
 			var res = checkAndExec({

@@ -101,6 +101,11 @@ $(function(){
 				return false;
 			}
 
+			if(document.querySelectorAll('form div.post.reply').length >= 500){
+				alert('Бамплимит! Продолжим в следующем треде.');
+				return false;	
+			}
+
 			var res = checkAndExec({
 				cmd: cmd,
 				who: atackr,
