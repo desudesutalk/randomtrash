@@ -83,7 +83,7 @@ $(function(){
 			baseThread = localStorage.twBaseThread;
 		}
 
-		$('body').append('<div id="tripwars"><span id="twCollapser"><i class="fa fa-minus-square"></i></span> <span id="twConf"><i class="fa fa-cog"></i></span> <span id="twHideAway"><i class="fa fa-eye"></i></span><span id="twSyncStatus"></span><span id="odometer" style="float: right;"></span><div id="twContent" class="twHideAway"></div><div id="twConfig"><h1>TripWars v'+(typeof GM_info !== 'undefined' ? GM_info.script.version : GM_getMetadata("version"))+'</h1><br><p style="text-align: center;">Хеш статов: <strong id="twHash"></strong><br><br><button id="twSaveStats" style="float: left;"><i class="fa fa-download"></i> Скачать файл статсов</button><button id="twUploadStats" style="float: right;"><i class="fa fa-upload"></i> Загрузить файл статсов</button><input type="file" id="twUploadStatsInput" style="display: none;"><br></p><hr><h3 style="text-align: center;">Генератор ОП-пика со статами</h3><p style="text-align: center;"><button id="twOpPicGen"><i class="fa fa-picture-o"></i> склеить ОП-пик</button></p><hr><h3 style="text-align: center;">Бездна Анального Огораживания</h3><p style="text-align: center;"><label><input type="checkbox" id="twHideAnons"> анонимы - не люди</label><br><label>Я на хую вертел тех, у кого энергии меньше <input type="number" id="twHideEnergy" value="0" style="width: 50px;"></label></p></div><input id="twOpenOpPic" type="file" style="display: none;"/></div>');
+		$('body').append('<div id="tripwars"><span id="twCollapser"><i class="fa fa-minus-square"></i></span> <span id="twConf"><i class="fa fa-cog"></i></span> <span id="twHideAway"><i class="fa fa-eye"></i></span><span id="twSyncStatus"></span><span id="odometer" style="float: right;"></span><div id="twContent" class="twHideAway"></div><div id="twConfig"><h1>TripWars v'+(typeof GM_info !== 'undefined' ? GM_info.script.version : GM_getMetadata("version"))+'</h1><br><p style="text-align: center;">Хеш статов: <strong id="twHash"></strong><br><br><button id="twSaveStats" style="float: left;"><i class="fa fa-download"></i> Скачать файл статсов</button><button id="twUploadStats" style="float: right;"><i class="fa fa-upload"></i> Загрузить файл статсов</button><input type="file" id="twUploadStatsInput" style="display: none;"><br></p><hr><h3 style="text-align: center;">Мой трипкод:</h3><p style="text-align: center;"><input id="twMyTripCode" type="text"/></p><hr><h3 style="text-align: center;">Генератор ОП-пика со статами</h3><p style="text-align: center;"><button id="twOpPicGen"><i class="fa fa-picture-o"></i> склеить ОП-пик</button></p><hr><h3 style="text-align: center;">Бездна Анального Огораживания</h3><p style="text-align: center;"><label><input type="checkbox" id="twHideAnons"> анонимы - не люди</label><br><label>Я на хую вертел тех, у кого энергии меньше <input type="number" id="twHideEnergy" value="0" style="width: 50px;"></label></p></div><input id="twOpenOpPic" type="file" style="display: none;"/></div>');
 		$('head').append('<style type="text/css">   #tripwars { max-height: 90%; overflow-y: auto; min-width: 400px; position: fixed; top: 15px; right: 30px; background: #fff; padding: 5px; font-size: 12px; border-radius: 3px; box-shadow: 0px 0px 10px rgba(0,0,0,0.25); counter-reset: pstn; } #twContent div:before { counter-increment: pstn; content: counter(pstn) ": "; } #twContent div { padding: 5px; border-bottom: 1px solid #eee; position: relative; } #tripwars span.fr{ float: right; margin-left: 5px; } #twContent div:hover span.ctrls{ display: block; } #twContent div span.ctrls{ display: none; } #tripwars span.badge{ color: white; background: #3db; padding: 3px; border-radius: 10px; } #tripwars br{ clear: both; } .twShowLess div { display:none; } .twShowLess div:first-child { display:block; } #twCollapser, #twConf, #twHideAway {cursor: pointer;} .twShowConfig #twContent {display: none;} #twConfig {display:none;} .twShowConfig #twConfig {display: block;} #twConfig textarea {margin: 0 !important; width: 400px; resize: vertical;} .twRaped > span:not(.badge), .twRaped > strong, .twRaped > em {color: pink !important;} .twAway:not(:hover) * {opacity: 0.75} .twHideAway .twAway {display:none !important;}</style>');
 		$('head').append('<style type="text/css" id="twAvaStyle"></style>');
 		$('#twCollapser').on('click', function(){$('#twContent').toggleClass('twShowLess');$('#tripwars').removeClass('twShowConfig');});
@@ -93,17 +93,41 @@ $(function(){
 			var cmd = e.target.textContent, title;
 			if(e.target.nodeName != 'A') return true;
 
-			var trip = e.target.parentNode.parentNode.dataset.trip;
+			var trip = e.target.parentNode.parentNode.dataset.trip,
+				atackr = localStorage.getItem('twmytrip');
+
+			if(atackr){
+				var res = checkAndExec({
+					cmd: cmd,
+					who: atackr,
+					target: trip,
+					rnd: 0,
+					file: 'file',
+					title: '',
+					imgSrc: '',
+					imgW: 100,
+					imgH: 100,
+				},true);
+
+				if(res.status != 'OK'){
+					alert(res.msg);
+					return false;
+				}
+			}
 
 			if(cmd == 'T'){
 				title = prompt('Звание (30 символов, русские и английские буквы, цифры, пробел и минус): ').replace(/[^a-z0-9а-я\-\s]/ig, '').substring(0,30);
 				$('form textarea#body').val($('form textarea#body').val() + '\n[h]T:'+title.substring(0,30)+':'+trip+'[/h]');
-			}
-
-			if(['A', 'S', 'F', 'R', 'I', 'K', 'O'].indexOf(cmd) != -1){
+			}else{
 				$('form textarea#body').val($('form textarea#body').val() + '\n[h]'+cmd+':'+trip+'[/h]');
 			}
 		});
+
+		$('#twMyTripCode').val(localStorage.getItem('twmytrip'));
+		
+		$('#twMyTripCode').on('change', function() {
+	        localStorage.setItem('twmytrip', $('#twMyTripCode').val());
+	    });
 
 		$('#twHideAnons').on('change', function() {
 	        hideAnons = !!$('#twHideAnons').attr('checked');

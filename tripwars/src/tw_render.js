@@ -34,6 +34,11 @@ function renderTripGame(){
 	  return b.energy - a.energy;
 	});
 
+	function titleCost(p){
+		if(!p.title) return 10;
+		return pleers[i].title.cost * 2 < 1280 ? pleers[i].title.cost * 2 : 1280;
+	}
+
 	for (var i = 0; i < pleers.length; i++) {
 		playa = pleers[i];
 
@@ -84,6 +89,8 @@ function renderTripGame(){
 		if(pleers[i].raped == curThread) tripClasses.push('twRaped');
 		if(pleers[i].lastThread != curThread && i !== 0) tripClasses.push('twAway');
 
+
+
 		cntnt.push('<div data-trip="'+safe_tags(pleers[i].trip)+'"' + 
 			(i === 0? ' style="font-size:16px"':'') + ' class="'+ tripClasses.join(' ') +'">' + 
 			(pleers[i].title? '<em>'+safe_tags(pleers[i].title.title)+'</em> ' : '') +
@@ -94,7 +101,7 @@ function renderTripGame(){
 			'<br><span class="ctrls">'+
 			'[<a href="javascript:;" title="пульнуть">A</a>]'+
 			'&nbsp;[<a href="javascript:;" title="дать шкварку">S</a>]'+
-			'&nbsp;[<a href="javascript:;" title="дать титул за ' + (pleers[i].title ? 2 * pleers[i].title.cost : 10) + ' энергии">T</a>]'+
+			'&nbsp;[<a href="javascript:;" title="дать титул за ' + titleCost(pleers[i]) + ' энергии">T</a>]'+
 			'&nbsp;[<a href="javascript:;" title="покормить">F</a>]'+
 			'&nbsp;[<a href="javascript:;" title="RAEP!">R</a>]'+
 			'&nbsp;[<a href="javascript:;" title="новое лицо">I</a>]'+
