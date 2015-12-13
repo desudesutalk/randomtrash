@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.41
+// @version      0.0.42
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -971,23 +971,26 @@ $(function(){
 			var trip = e.target.parentNode.parentNode.dataset.trip,
 				atackr = localStorage.getItem('twmytrip');
 
-			if(atackr){
-				var res = checkAndExec({
-					cmd: cmd,
-					who: atackr,
-					target: trip,
-					rnd: 0,
-					file: 'file',
-					title: '',
-					imgSrc: '',
-					imgW: 100,
-					imgH: 100,
-				},true);
+			if(!atackr){
+				alert('Зайди в настройки и укажи свой трипкод.');
+				return false;
+			}
 
-				if(res.status != 'OK'){
-					alert(res.msg);
-					return false;
-				}
+			var res = checkAndExec({
+				cmd: cmd,
+				who: atackr,
+				target: trip,
+				rnd: 0,
+				file: 'file',
+				title: '',
+				imgSrc: '',
+				imgW: 100,
+				imgH: 100,
+			},true);
+
+			if(res.status != 'OK'){
+				alert(res.msg);
+				return false;
 			}
 
 			if(cmd == 'T'){
