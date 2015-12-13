@@ -35,7 +35,10 @@ function parsePostResults(p, isOp){
 		}
 	}
 
-	if(!trip) return null;
+	if(!trip){
+		p.classList.add('tw-isanonym');
+		return null;
+	}
 	trip = trip.textContent.substring(0,12);
 	name = name.textContent;
 
@@ -144,6 +147,17 @@ function parsePostResults(p, isOp){
 			tgStats[m[4]].energy += 25;
 		}
 
+		if(m[1].toUpperCase() == 'O' && tgStats[trip].energy > 50 && tgStats[m[4]]){
+			t = Object.keys(tgStats[m[4]].shkvarki);
+			if(t.length > 0){
+				tgStats[trip].energy -= 50;
+				r = t.pop();
+				tgStats[trip].shkvarki[t] = true;
+				tgStats[m[4]].shkvarki[t] = undefined;
+				delete tgStats[m[4]].shkvarki[t];
+			}
+		}
+
 		if(imgSrc && m[1].toUpperCase() == 'I' && tgStats[trip].energy > 250 && tgStats[m[4]]){
 			tgStats[trip].energy -= 250;
 			tgStats[m[4]].ava = {
@@ -185,19 +199,20 @@ function parsePostResults(p, isOp){
 function parseTripGame(callFrom){
 	console.log('parseThread called from: ' + callFrom);
 	console.time('parseThread');
-	var posts = document.querySelectorAll('form div.post.reply:not(.twParsed)'),
+	var posts = document.querySelectorAll('form div.post.reply'),
 		op = document.querySelector('form div.post.op:not(.twParsed)'),
 		i;
 
 	if(op) parsePostResults(op , true);
 
 	for (i = 0; i < posts.length && i < 500; i++) {
+		if(posts[i].classList.contains('twParsed')) continue;
 		parsePostResults(posts[i]);
 	}
 	
 	renderTripGame();
 
-	if(document.querySelectorAll('form div.post.reply').length >= 500){
+	if(posts.length >= 500){
 		if(!localStorage.twBaseThread || curThread > localStorage.twBaseThread){
 			localStorage.twBaseThread = curThread;
 			localStorage.twBaseStats = JSON.stringify(tgStats);

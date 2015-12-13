@@ -26,13 +26,24 @@ function renderTripGame(){
 		}
 	}
 
+	if(hideAnons){		
+		addons.push('.tw-isanonym:not(.hover):not(.de-pview) {display: none !important;}');
+	}
+
 	pleers.sort(function(a, b) {
 	  return b.energy - a.energy;
 	});
 
 	for (var i = 0; i < pleers.length; i++) {
 		playa = pleers[i];
+
 		safeTrip = bytesToHex(strToUTF8Arr(playa.trip));
+
+		if(hideEnergy > 0 && playa.energy < hideEnergy){
+			addons.push('.tw-' + safeTrip + ':not(.hover):not(.de-pview) {display: none !important;}');
+			continue;
+		}
+		
 		if(playa.ava){
 			if(playa.ava.thread == curThread && playa.ava.src.match(avaRegEx) && 
 				playa.ava.width <= 200 && playa.ava.height <= 200 &&
@@ -88,6 +99,7 @@ function renderTripGame(){
 			'&nbsp;[<a href="javascript:;" title="RAEP!">R</a>]'+
 			'&nbsp;[<a href="javascript:;" title="новое лицо">I</a>]'+
 			'&nbsp;[<a href="javascript:;" title="КУДАХ-БАБАХ!">K</a>]'+
+			'&nbsp;[<a href="javascript:;" title="Отсосать (шкварку)">O</a>]'+
 			'</span></div>');
 		tgStats[pleers[i].trip].prev = pleers[i].energy;
 
