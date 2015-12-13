@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.38
+// @version      0.0.39
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -945,7 +945,13 @@ $(function(){
 			}
 		});
 
-		$('#twOpPicGen').on('click', function(){$('#twOpenOpPic').click();});
+		$('#twOpPicGen').on('click', function(){
+			if(document.querySelectorAll('form div.post.reply').length < 500){
+				alert('Бамплимит ещё не наступил!');
+				return false;
+			}
+			$('#twOpenOpPic').click();
+		});
 		$('#twOpenOpPic').on('change', function(evt){
 			if(evt.target.files.length === 0) return false;
 			var ext = evt.target.files[0].name.match(/(\.[^\.]+)$/)[1];
