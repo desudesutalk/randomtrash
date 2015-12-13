@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.43
+// @version      0.0.44
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -537,7 +537,6 @@ function checkAndExec(params, onlyCheck){
 		atackr.shkvarki[sk] = true;
 		target.shkvarki[sk] = undefined;
 		delete target.shkvarki[sk];
-		console.dir({sk:sk, t:target, a: atackr});		
 	}
 
 	if(cmd == 'O' && atackr.energy <= 250){
@@ -651,8 +650,6 @@ function parsePostResults(p, isOp){
 }
 
 function parseTripGame(callFrom){
-	console.log('parseThread called from: ' + callFrom);
-	console.time('parseThread');
 	var posts = document.querySelectorAll('form div.post.reply'),
 		op = document.querySelector('form div.post.op:not(.twParsed)'),
 		i;
@@ -682,8 +679,6 @@ function parseTripGame(callFrom){
 			$('#twHash').text(savedStateHash.match(/[0-9-a-f]{4}/ig).join('-'));
 		}
 	}
-
-	console.timeEnd('parseThread');
 }
 
 
@@ -755,7 +750,6 @@ function safe_tags(str) {
 var avaRegEx = /^\/\d+\/\d+\/\d+\/\d+-[0-9a-f]+\.png$/i;
 
 function renderTripGame(){
-	console.time('renderTripGame');
 	var pleers = [], diff, difTxt, shkvarki, t, avas = [], playa, addons = [], cntnt = [], safeTrip;
 	
 	for (var property in tgStats) {
@@ -1147,6 +1141,7 @@ $(function(){
 					genSaveState();
 					parseTripGame('stats loader from OP-pic');
 					console.log('OP parsed');
+					$('#twSyncStatus').append('<strong style="color: #0e0;"> ОП-sync</strong>');
 				}else{
 					$('#twSyncStatus').append('<strong style="color: red;"> Нет синхры в ОП-пике!</strong>');
 				}

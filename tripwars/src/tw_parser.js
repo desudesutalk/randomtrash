@@ -167,7 +167,6 @@ function checkAndExec(params, onlyCheck){
 		atackr.shkvarki[sk] = true;
 		target.shkvarki[sk] = undefined;
 		delete target.shkvarki[sk];
-		console.dir({sk:sk, t:target, a: atackr});		
 	}
 
 	if(cmd == 'O' && atackr.energy <= 250){
@@ -281,8 +280,6 @@ function parsePostResults(p, isOp){
 }
 
 function parseTripGame(callFrom){
-	console.log('parseThread called from: ' + callFrom);
-	console.time('parseThread');
 	var posts = document.querySelectorAll('form div.post.reply'),
 		op = document.querySelector('form div.post.op:not(.twParsed)'),
 		i;
@@ -312,8 +309,6 @@ function parseTripGame(callFrom){
 			$('#twHash').text(savedStateHash.match(/[0-9-a-f]{4}/ig).join('-'));
 		}
 	}
-
-	console.timeEnd('parseThread');
 }
 
 

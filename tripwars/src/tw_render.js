@@ -17,7 +17,6 @@ function safe_tags(str) {
 var avaRegEx = /^\/\d+\/\d+\/\d+\/\d+-[0-9a-f]+\.png$/i;
 
 function renderTripGame(){
-	console.time('renderTripGame');
 	var pleers = [], diff, difTxt, shkvarki, t, avas = [], playa, addons = [], cntnt = [], safeTrip;
 	
 	for (var property in tgStats) {
