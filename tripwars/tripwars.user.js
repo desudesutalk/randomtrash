@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.39
+// @version      0.0.40
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -615,7 +615,7 @@ function applyStats(obj){
 		obj.twBaseStats[t].raped = undefined;
 		delete obj.twBaseStats[t].raped;
 
-		obj.twBaseStats[t].energy = obj.twBaseStats[t].energy - Math.floor(obj.twBaseStats[t].energy * 0.1);
+		obj.twBaseStats[t].energy = obj.twBaseStats[t].energy - Math.floor(obj.twBaseStats[t].energy * 0.02);
 		
 		if(obj.twBaseStats[t].energy <= 10) continue;
 				
