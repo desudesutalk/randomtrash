@@ -3,7 +3,7 @@ var tgStats = {},
 	rikaNipah = '!NipaJ2fn2k';
 
 function killTrip(trip){
-	if(tgStats[trip].energy > 0) return true;
+	if(!tgStats[trip] || tgStats[trip].energy > 0) return true;
 	tgStats[trip].energy = 0;
 	tgStats[trip].shkvarki = {};
 	tgStats[trip].title = null;
@@ -32,10 +32,8 @@ function checkAndExec(params, onlyCheck){
 		atackr.energy -= 5;
 		if(atck < 0){
 			atackr.energy += atck;
-			killTrip(atackr.trip);
 		}else{
 			target.energy -= atck;
-			killTrip(target.trip);
 		}
 	}
 
@@ -54,7 +52,6 @@ function checkAndExec(params, onlyCheck){
 			atackr.energy = target.energy;
 			target.energy = t;
 			atackr.energy -= 100;
-			killTrip(atackr.trip);
 			return true;
 		}
 
@@ -133,9 +130,7 @@ function checkAndExec(params, onlyCheck){
 		if(onlyCheck){return {status: "OK"};}
 
 		atackr.energy = 0;
-		killTrip(atackr.trip);
 		target.energy -= Math.floor(target.energy / 2);
-		killTrip(target.trip);
 	}
 
 	if(cmd == 'K' && atackr.energy <= 500){
@@ -257,7 +252,8 @@ function parsePostResults(p, isOp){
 			imgW: imgW,
 			imgH: imgH,
 		});
-
+		killTrip(trip);
+		killTrip(m[4]);
 		break;
 	}
 
@@ -310,6 +306,8 @@ function applyStats(obj){
 		delete obj.twBaseStats[t].ava;
 		obj.twBaseStats[t].raped = undefined;
 		delete obj.twBaseStats[t].raped;
+
+		obj.twBaseStats[t].prev = obj.twBaseStats[t].energy;
 
 		obj.twBaseStats[t].energy = obj.twBaseStats[t].energy - Math.min(Math.floor(obj.twBaseStats[t].energy * 0.02), 100);
 		

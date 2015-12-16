@@ -181,7 +181,7 @@ $(function(){
 		});
 
 		$('#twOpPicGen').on('click', function(){
-			if(document.querySelectorAll('form div.post.reply').length < 500){
+			if(document.querySelectorAll('form div.post.reply.twParsed').length < 500){
 				alert('Бамплимит ещё не наступил!');
 				return false;
 			}
