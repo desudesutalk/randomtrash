@@ -8,15 +8,10 @@ function killTrip(trip){
 	tgStats[trip].shkvarki = {};
 	tgStats[trip].title = null;
 	tgStats[trip].ava = null;
-	
-	if(trip == rikaNipah){
-		tgStats[trip].rikaWiped = true;
-	}
 }
 
 var imRegEx = /thumb(\/\d+\/\d+\/\d+\/\d+-[0-9a-f]+\.png$)/i,
     zipRegEx = /\/\d+\/\d+\/\d+\/\d+-[0-9a-f]+\.zip$/i;
-
 
 function checkAndExec(params, onlyCheck){
 	var atackr = tgStats[params.who],
@@ -228,21 +223,21 @@ function parsePostResults(p, isOp){
 	}
 
 	if(!tgStats[trip]){
-		tgStats[trip] = {name: name, trip: trip, energy: 1, shkvarki: {}, title: null};
-	}else{
-		if(tgStats[trip].raped != curThread){
-			e = isOp? 250 : 0;
-			m = pid.match(/(\d)\1+$/);
-
-			if(m){
-				e += Math.pow(10, m[0].length - 1);
-			}else{
-				e++;
-			}
-			tgStats[trip].energy += e;
-		}
-		tgStats[trip].name = name;
+		tgStats[trip] = {name: name, trip: trip, energy: 0, shkvarki: {}, title: null};
 	}
+
+	if(tgStats[trip].raped != curThread){
+		m = pid.match(/(\d)\1+$/);
+
+		if(m){
+			e = Math.pow(10, m[0].length - 1);
+		}else{
+			e = 1;
+		}
+		tgStats[trip].energy += e;
+	}
+	tgStats[trip].name = name;
+
 
 	tgStats[trip].lastThread = curThread;
 	
@@ -294,19 +289,9 @@ function parseTripGame(callFrom){
 	renderTripGame();
 
 	if(posts.length >= 500){
-		if(!localStorage.twBaseThread || curThread > localStorage.twBaseThread){
-			localStorage.twBaseThread = curThread;
-			localStorage.twBaseStats = JSON.stringify(tgStats);
-
-			baseThread = localStorage.twBaseThread;
-
-			savedState = JSON.stringify({
-				twBaseStats: JSON.parse(localStorage.twBaseStats || "{}"),
-				twBaseThread: localStorage.twBaseThread || curThread 
-			});
-			savedStateHash = hashStats();
-
-			$('#twHash').text(savedStateHash.match(/[0-9-a-f]{4}/ig).join('-'));
+		if(curThread != baseThread){
+			baseThread = curThread;
+			genSaveState();
 		}
 	}
 }
@@ -338,13 +323,12 @@ function applyStats(obj){
 }
 
 function hashStats(){
-	var finalStr = localStorage.twBaseThread || curThread,
-		stats = JSON.parse(localStorage.twBaseStats || "{}"),
-		trips = Object.keys(stats),
+	var finalStr = '>' + baseThread,
+		trips = Object.keys(tgStats),
 		i, p;
 
 		for (i = 0; i < trips.length; i++) {
-			p = stats[trips[i]];
+			p = tgStats[trips[i]];
 
 			finalStr += '[' +trips[i] + '|'	+ p.name + '|' + p.energy + '|' + p.lastThread + '|';
 			
@@ -357,6 +341,5 @@ function hashStats(){
 					 
 			finalStr += ']';
 		}
-
 		return md5(utf8ArrToStr(finalStr));
 }
