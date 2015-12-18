@@ -32,7 +32,7 @@ function checkAndExec(params, onlyCheck){
 		if(r > 0){
 			mt = new MersenneTwister(rnd);
 
-			for (i = 0; i < r; i++) {
+			for (i = 0; i < r && i < 5; i++) {
 				atck = Math.round(mt.genrand_real1() * 55 - 5);
 				atackr.energy -= 5;
 				if(atck < 0){
@@ -119,7 +119,7 @@ function checkAndExec(params, onlyCheck){
 		if(onlyCheck){return {status: "OK"};}
 
 		if(r > 0){
-			for (i = 0; i < r; i++) {
+			for (i = 0; i < r && i < 5; i++) {
 				atackr.energy -= 60;
 				target.energy += 50;
 				if(atackr.energy <= 60) break;
