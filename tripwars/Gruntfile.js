@@ -12,6 +12,7 @@ module.exports = function(grunt) {
                                     'src/libs/md5.js',
                                     'src/libs/FileSaver.min.js',
                                     'src/libs/jszip.min.js',
+                                    'src/libs/MersenneTwister.js',                                    
                                     "src/utils.js",
                                     "src/odometer.js",
                                     "src/tw_parser.js",

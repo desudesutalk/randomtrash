@@ -118,6 +118,8 @@ $(function(){
 			if(cmd == 'T'){
 				title = prompt('Звание (30 символов, русские и английские буквы, цифры, пробел и минус): ').replace(/[^a-z0-9а-я\-\s]/ig, '').substring(0,30);
 				$('form textarea#body').val($('form textarea#body').val() + '\n[h]T:'+title.substring(0,30)+':'+trip+'[/h]');
+			}if(cmd == 'A' || cmd == 'F'){
+				$('form textarea#body').val($('form textarea#body').val() + '\n[h]'+cmd+':1:'+trip+'[/h]');
 			}else{
 				$('form textarea#body').val($('form textarea#body').val() + '\n[h]'+cmd+':'+trip+'[/h]');
 			}

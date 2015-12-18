@@ -19,7 +19,8 @@ function checkAndExec(params, onlyCheck){
 		cmd = params.cmd.toUpperCase(),
 		rnd = params.rnd,
 		file = params.file,
-		atck, t, tCost, i;
+		r = parseInt(params.title),
+		atck, t, tCost, i, mt;
 
 	if(!atackr || !target) return {status: "ERROR", msg: "Ой, что-то пошло не так."};
 
@@ -27,14 +28,30 @@ function checkAndExec(params, onlyCheck){
 
 	if(file && cmd == 'A' && atackr.energy > 5 && target){
 		if(onlyCheck){return {status: "OK"};}
-		
-		atck = Math.round(((rnd & 255) / 255) * 55 - 5);
-		atackr.energy -= 5;
-		if(atck < 0){
-			atackr.energy += atck;
+
+		if(r > 0){
+			mt = new MersenneTwister(rnd);
+
+			for (i = 0; i < r; i++) {
+				atck = Math.round(mt.genrand_real1() * 55 - 5);
+				atackr.energy -= 5;
+				if(atck < 0){
+					atackr.energy += atck;
+				}else{
+					target.energy -= atck;
+				}
+				if(atackr.energy <= 5 || target.energy <= 0) break;
+			}
 		}else{
-			target.energy -= atck;
-		}
+			console.log('Single A');
+			atck = Math.round(((rnd & 255) / 255) * 55 - 5);
+			atackr.energy -= 5;
+			if(atck < 0){
+				atackr.energy += atck;
+			}else{
+				target.energy -= atck;
+			}
+		}		
 	}
 
 	if(file && cmd == 'A' && atackr.energy <= 5){
@@ -100,8 +117,17 @@ function checkAndExec(params, onlyCheck){
 
 	if(cmd == 'F' && atackr.energy >= 250 && target){
 		if(onlyCheck){return {status: "OK"};}
-		atackr.energy -= 60;
-		target.energy += 50;
+
+		if(r > 0){
+			for (i = 0; i < r; i++) {
+				atackr.energy -= 60;
+				target.energy += 50;
+				if(atackr.energy <= 60) break;
+			}
+		}else{
+			atackr.energy -= 60;
+			target.energy += 50;			
+		}
 	}
 	
 	if(cmd == 'F' && atackr.energy <= 250){
