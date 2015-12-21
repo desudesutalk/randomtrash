@@ -247,7 +247,7 @@ function parsePostResults(p, isOp){
 		tgStats[trip] = {name: name, trip: trip, energy: 0, shkvarki: {}, title: null};
 	}
 
-	if(tgStats[trip].raped != curThread){
+/*	if(tgStats[trip].raped != curThread){
 		m = pid.match(/(\d)\1+$/);
 
 		if(m){
@@ -256,7 +256,7 @@ function parsePostResults(p, isOp){
 			e = 1;
 		}
 		tgStats[trip].energy += e;
-	}
+	}*/
 	tgStats[trip].name = name;
 
 
@@ -314,6 +314,7 @@ function parseTripGame(callFrom){
 		if(curThread != baseThread){
 			baseThread = curThread;
 			genSaveState();
+			localStorage.twSawedState = savedState;
 		}
 	}
 }
@@ -346,13 +347,13 @@ function applyStats(obj){
 	tgStats = newTgStats;
 }
 
-function hashStats(){
-	var finalStr = '>' + baseThread,
-		trips = Object.keys(tgStats),
+function hashStats(bt, st){
+	var finalStr = '>' + bt,
+		trips = Object.keys(st).sort(),
 		i, p;
 
 		for (i = 0; i < trips.length; i++) {
-			p = tgStats[trips[i]];
+			p = st[trips[i]];
 
 			finalStr += '[' +trips[i] + '|'	+ p.name + '|' + p.energy + '|' + p.lastThread + '|';
 			

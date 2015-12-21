@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchTripWars
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.51
+// @version      0.0.52
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -43,7 +43,8 @@ return C?(g=f[k>>4&15]+f[k&15],g+=f[k>>12&15]+f[k>>8&15],g+=f[k>>20&15]+f[k>>16&
 e.constructor==ArrayBuffer&&(e=new Uint8Array(e));return 370>=e.length?x(e):B.createHash("md5").update(new E(e)).digest("hex")}}else q&&(q.md5=x)})(this);
 
 /*! @source http://purl.eligrey.com/github/FileSaver.js/blob/master/FileSaver.js */
-var saveAs=saveAs||"undefined"!=typeof navigator&&navigator.msSaveOrOpenBlob&&navigator.msSaveOrOpenBlob.bind(navigator)||function(e){"use strict";if("undefined"==typeof navigator||!/MSIE [1-9]\./.test(navigator.userAgent)){var t=e.document,n=function(){return e.URL||e.webkitURL||e},o=t.createElementNS("http://www.w3.org/1999/xhtml","a"),r="download"in o,i=function(n){var o=t.createEvent("MouseEvents");o.initMouseEvent("click",!0,!1,e,0,0,0,0,0,!1,!1,!1,!1,0,null),n.dispatchEvent(o)},a=e.webkitRequestFileSystem,c=e.requestFileSystem||a||e.mozRequestFileSystem,s=function(t){(e.setImmediate||e.setTimeout)(function(){throw t},0)},u="application/octet-stream",f=0,d=500,l=function(t){var o=function(){"string"==typeof t?n().revokeObjectURL(t):t.remove()};e.chrome?o():setTimeout(o,d)},v=function(e,t,n){t=[].concat(t);for(var o=t.length;o--;){var r=e["on"+t[o]];if("function"==typeof r)try{r.call(e,n||e)}catch(i){s(i)}}},p=function(t,s){var d,p,w,y=this,m=t.type,S=!1,h=function(){v(y,"writestart progress write writeend".split(" "))},O=function(){if((S||!d)&&(d=n().createObjectURL(t)),p)p.location.href=d;else{var o=e.open(d,"_blank");void 0==o&&"undefined"!=typeof safari&&(e.location.href=d)}y.readyState=y.DONE,h(),l(d)},b=function(e){return function(){return y.readyState!==y.DONE?e.apply(this,arguments):void 0}},g={create:!0,exclusive:!1};return y.readyState=y.INIT,s||(s="download"),r?(d=n().createObjectURL(t),o.href=d,o.download=s,i(o),y.readyState=y.DONE,h(),void l(d)):(/^\s*(?:text\/(?:plain|xml)|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(t.type)&&(t=new Blob(["﻿",t],{type:t.type})),e.chrome&&m&&m!==u&&(w=t.slice||t.webkitSlice,t=w.call(t,0,t.size,u),S=!0),a&&"download"!==s&&(s+=".download"),(m===u||a)&&(p=e),c?(f+=t.size,void c(e.TEMPORARY,f,b(function(e){e.root.getDirectory("saved",g,b(function(e){var n=function(){e.getFile(s,g,b(function(e){e.createWriter(b(function(n){n.onwriteend=function(t){p.location.href=e.toURL(),y.readyState=y.DONE,v(y,"writeend",t),l(e)},n.onerror=function(){var e=n.error;e.code!==e.ABORT_ERR&&O()},"writestart progress write abort".split(" ").forEach(function(e){n["on"+e]=y["on"+e]}),n.write(t),y.abort=function(){n.abort(),y.readyState=y.DONE},y.readyState=y.WRITING}),O)}),O)};e.getFile(s,{create:!1},b(function(e){e.remove(),n()}),b(function(e){e.code===e.NOT_FOUND_ERR?n():O()}))}),O)}),O)):void O())},w=p.prototype,y=function(e,t){return new p(e,t)};return w.abort=function(){var e=this;e.readyState=e.DONE,v(e,"abort")},w.readyState=w.INIT=0,w.WRITING=1,w.DONE=2,w.error=w.onwritestart=w.onprogress=w.onwrite=w.onabort=w.onerror=w.onwriteend=null,y}}("undefined"!=typeof self&&self||"undefined"!=typeof window&&window||this.content);"undefined"!=typeof module&&module.exports?module.exports.saveAs=saveAs:"undefined"!=typeof define&&null!==define&&null!=define.amd&&define([],function(){return saveAs});
+var saveAs=saveAs||function(view){"use strict";if(typeof navigator!=="undefined"&&/MSIE [1-9]\./.test(navigator.userAgent)){return}var doc=view.document,get_URL=function(){return view.URL||view.webkitURL||view},save_link=doc.createElementNS("http://www.w3.org/1999/xhtml","a"),can_use_save_link="download"in save_link,click=function(node){var event=new MouseEvent("click");node.dispatchEvent(event)},is_safari=/Version\/[\d\.]+.*Safari/.test(navigator.userAgent),webkit_req_fs=view.webkitRequestFileSystem,req_fs=view.requestFileSystem||webkit_req_fs||view.mozRequestFileSystem,throw_outside=function(ex){(view.setImmediate||view.setTimeout)(function(){throw ex},0)},force_saveable_type="application/octet-stream",fs_min_size=0,arbitrary_revoke_timeout=500,revoke=function(file){var revoker=function(){if(typeof file==="string"){get_URL().revokeObjectURL(file)}else{file.remove()}};if(view.chrome){revoker()}else{setTimeout(revoker,arbitrary_revoke_timeout)}},dispatch=function(filesaver,event_types,event){event_types=[].concat(event_types);var i=event_types.length;while(i--){var listener=filesaver["on"+event_types[i]];if(typeof listener==="function"){try{listener.call(filesaver,event||filesaver)}catch(ex){throw_outside(ex)}}}},auto_bom=function(blob){if(/^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(blob.type)){return new Blob(["\ufeff",blob],{type:blob.type})}return blob},FileSaver=function(blob,name,no_auto_bom){if(!no_auto_bom){blob=auto_bom(blob)}var filesaver=this,type=blob.type,blob_changed=false,object_url,target_view,dispatch_all=function(){dispatch(filesaver,"writestart progress write writeend".split(" "))},fs_error=function(){if(target_view&&is_safari&&typeof FileReader!=="undefined"){var reader=new FileReader;reader.onloadend=function(){var base64Data=reader.result;target_view.location.href="data:attachment/file"+base64Data.slice(base64Data.search(/[,;]/));filesaver.readyState=filesaver.DONE;dispatch_all()};reader.readAsDataURL(blob);filesaver.readyState=filesaver.INIT;return}if(blob_changed||!object_url){object_url=get_URL().createObjectURL(blob)}if(target_view){target_view.location.href=object_url}else{var new_tab=view.open(object_url,"_blank");if(new_tab==undefined&&is_safari){view.location.href=object_url}}filesaver.readyState=filesaver.DONE;dispatch_all();revoke(object_url)},abortable=function(func){return function(){if(filesaver.readyState!==filesaver.DONE){return func.apply(this,arguments)}}},create_if_not_found={create:true,exclusive:false},slice;filesaver.readyState=filesaver.INIT;if(!name){name="download"}if(can_use_save_link){object_url=get_URL().createObjectURL(blob);setTimeout(function(){save_link.href=object_url;save_link.download=name;click(save_link);dispatch_all();revoke(object_url);filesaver.readyState=filesaver.DONE});return}if(view.chrome&&type&&type!==force_saveable_type){slice=blob.slice||blob.webkitSlice;blob=slice.call(blob,0,blob.size,force_saveable_type);blob_changed=true}if(webkit_req_fs&&name!=="download"){name+=".download"}if(type===force_saveable_type||webkit_req_fs){target_view=view}if(!req_fs){fs_error();return}fs_min_size+=blob.size;req_fs(view.TEMPORARY,fs_min_size,abortable(function(fs){fs.root.getDirectory("saved",create_if_not_found,abortable(function(dir){var save=function(){dir.getFile(name,create_if_not_found,abortable(function(file){file.createWriter(abortable(function(writer){writer.onwriteend=function(event){target_view.location.href=file.toURL();filesaver.readyState=filesaver.DONE;dispatch(filesaver,"writeend",event);revoke(file)};writer.onerror=function(){var error=writer.error;if(error.code!==error.ABORT_ERR){fs_error()}};"writestart progress write abort".split(" ").forEach(function(event){writer["on"+event]=filesaver["on"+event]});writer.write(blob);filesaver.abort=function(){writer.abort();filesaver.readyState=filesaver.DONE};filesaver.readyState=filesaver.WRITING}),fs_error)}),fs_error)};dir.getFile(name,{create:false},abortable(function(file){file.remove();save()}),abortable(function(ex){if(ex.code===ex.NOT_FOUND_ERR){save()}else{fs_error()}}))}),fs_error)}),fs_error)},FS_proto=FileSaver.prototype,saveAs=function(blob,name,no_auto_bom){return new FileSaver(blob,name,no_auto_bom)};if(typeof navigator!=="undefined"&&navigator.msSaveOrOpenBlob){return function(blob,name,no_auto_bom){if(!no_auto_bom){blob=auto_bom(blob)}return navigator.msSaveOrOpenBlob(blob,name||"download")}}FS_proto.abort=function(){var filesaver=this;filesaver.readyState=filesaver.DONE;dispatch(filesaver,"abort")};FS_proto.readyState=FS_proto.INIT=0;FS_proto.WRITING=1;FS_proto.DONE=2;FS_proto.error=FS_proto.onwritestart=FS_proto.onprogress=FS_proto.onwrite=FS_proto.onabort=FS_proto.onerror=FS_proto.onwriteend=null;return saveAs}(typeof self!=="undefined"&&self||typeof window!=="undefined"&&window||this.content);if(typeof module!=="undefined"&&module.exports){module.exports.saveAs=saveAs}else if(typeof define!=="undefined"&&define!==null&&define.amd!=null){define([],function(){return saveAs})}
+
 /*!
 
 JSZip - A Javascript class for generating and reading zip files
@@ -813,7 +814,7 @@ function parsePostResults(p, isOp){
 		tgStats[trip] = {name: name, trip: trip, energy: 0, shkvarki: {}, title: null};
 	}
 
-	if(tgStats[trip].raped != curThread){
+/*	if(tgStats[trip].raped != curThread){
 		m = pid.match(/(\d)\1+$/);
 
 		if(m){
@@ -822,7 +823,7 @@ function parsePostResults(p, isOp){
 			e = 1;
 		}
 		tgStats[trip].energy += e;
-	}
+	}*/
 	tgStats[trip].name = name;
 
 
@@ -880,6 +881,7 @@ function parseTripGame(callFrom){
 		if(curThread != baseThread){
 			baseThread = curThread;
 			genSaveState();
+			localStorage.twSawedState = savedState;
 		}
 	}
 }
@@ -912,13 +914,13 @@ function applyStats(obj){
 	tgStats = newTgStats;
 }
 
-function hashStats(){
-	var finalStr = '>' + baseThread,
-		trips = Object.keys(tgStats),
+function hashStats(bt, st){
+	var finalStr = '>' + bt,
+		trips = Object.keys(st).sort(),
 		i, p;
 
 		for (i = 0; i < trips.length; i++) {
-			p = tgStats[trips[i]];
+			p = st[trips[i]];
 
 			finalStr += '[' +trips[i] + '|'	+ p.name + '|' + p.energy + '|' + p.lastThread + '|';
 			
@@ -1098,7 +1100,7 @@ function genSaveState(){
 				twBaseStats: tgStats,
 				twBaseThread: baseThread 
 			});
-	savedStateHash = hashStats();
+	savedStateHash = hashStats(baseThread, tgStats);	
 	$('#twHash').text(savedStateHash.match(/[0-9-a-f]{4}/ig).join('-'));
 }
 
@@ -1140,10 +1142,18 @@ $(function(){
 			return true;
 		});
 
-		var m = window.location.pathname.match(/\/\w+\/(res|arch)\/([0-9\+]+)\.html/);
+		var m = window.location.pathname.match(/\/\w+\/(res|arch)\/([0-9\+]+)\.html/),
+			obj;
 		curThread = parseInt(m[2]);
 
-		applyStats({twBaseStats: {}, twBaseThread: 1});
+		
+		if(localStorage.twSawedState){
+			obj = JSON.parse(localStorage.twSawedState);
+			if(obj.twBaseThread < curThread)
+				applyStats(obj);		
+		}else{
+			applyStats({twBaseStats: {}, twBaseThread: 1});	
+		}		
 		genSaveState();
 
 		$('body').append('<div id="tripwars"><span id="twCollapser"><i class="fa fa-minus-square"></i></span> <span id="twConf"><i class="fa fa-cog"></i></span> <span id="twHideAway"><i class="fa fa-eye"></i></span><span id="twSyncStatus"></span><span id="odometer" style="float: right;"></span><div id="twContent" class="twHideAway"></div><div id="twConfig"><h1>TripWars v'+(typeof GM_info !== 'undefined' ? GM_info.script.version : GM_getMetadata("version"))+'</h1><br><p style="text-align: center;">Хеш статов: <strong id="twHash"></strong><br><br><button id="twSaveStats" style="float: left;"><i class="fa fa-download"></i> Скачать файл статсов</button><button id="twUploadStats" style="float: right;"><i class="fa fa-upload"></i> Загрузить файл статсов</button><input type="file" id="twUploadStatsInput" style="display: none;"><br></p><hr><h3 style="text-align: center;">Мой трипкод:</h3><p style="text-align: center;"><input id="twMyTripCode" type="text"/></p><hr><h3 style="text-align: center;">Генератор ОП-пика со статами</h3><p style="text-align: center;"><button id="twOpPicGen"><i class="fa fa-picture-o"></i> склеить ОП-пик</button></p><hr><h3 style="text-align: center;">Бездна Анального Огораживания</h3><p style="text-align: center;"><label><input type="checkbox" id="twHideAnons"> анонимы - не люди</label><br><label>Я на хую вертел тех, у кого энергии меньше <input type="number" id="twHideEnergy" value="0" style="width: 50px;"></label><h1><label><input type="checkbox" id="twNeBombit"> ДА НЕ БОМБИТ У МЕНЯ! НЕ БОМБИТ!</label></h1><br></p></div><input id="twOpenOpPic" type="file" style="display: none;"/></div>');
@@ -1222,7 +1232,7 @@ $(function(){
 
 		$('#twSaveStats').on('click', function(){
 			var zip = new JSZip();
-
+			genSaveState();
 			zip.file("TripWars-" +baseThread + "-" + savedStateHash +".json", strToUTF8Arr(savedState));
 			saveAs(zip.generate({type:"blob", compression: "DEFLATE"}), "TripWars-" +baseThread + "-" + savedStateHash +".zip");
 		});
@@ -1323,11 +1333,13 @@ $(function(){
 				var ci = cleanImage(new Uint8Array(ab));
 				if(!ci){$('#twSyncStatus').append('<strong style="color: red;"> Нет синхры в ОП-пике!</strong>');console.log('OP-pic parse fail.'); return false;}
 
-				var zip = JSZip(ci[1]);
-				var files = zip.file(/^tripwars.+\.json$/i);
+				var zip = JSZip(ci[1]),
+					files = zip.file(/^tripwars.+\.json$/i),
+					obj, hsh;
 
 				if(files.length > 0){
-					var obj = JSON.parse(utf8ArrToStr(files[0].asUint8Array()));
+					obj = JSON.parse(utf8ArrToStr(files[0].asUint8Array()));
+					hsh = hashStats(obj.twBaseThread, obj.twBaseStats).match(/[0-9-a-f]{4}/ig).join('-') + '['+obj.twBaseThread+']';
 					
 					applyStats(obj);
 					tgPostHits = {};
@@ -1335,8 +1347,11 @@ $(function(){
 
 					$('.twParsed').removeClass('twParsed');
 					parseTripGame('stats loader from OP-pic');
-					console.log('OP parsed');
-					$('#twSyncStatus').append('<strong style="color: #0a0;"> ОП-sync</strong>');
+					
+					console.log('OP parsed: ' + hsh);
+					$('#twSyncStatus').append('<strong style="color: #0a0;" title="'+hsh+'"> ОП-sync</strong>');
+					$('form div.post.op .intro').after('<em style="color: #0a0;">Хеш ОП-статов: '+hsh+'</em>');
+
 				}else{
 					$('#twSyncStatus').append('<strong style="color: red;"> Нет синхры в ОП-пике!</strong>');
 				}

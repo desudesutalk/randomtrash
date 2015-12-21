@@ -26,7 +26,7 @@ function genSaveState(){
 				twBaseStats: tgStats,
 				twBaseThread: baseThread 
 			});
-	savedStateHash = hashStats();
+	savedStateHash = hashStats(baseThread, tgStats);	
 	$('#twHash').text(savedStateHash.match(/[0-9-a-f]{4}/ig).join('-'));
 }
 
@@ -68,10 +68,18 @@ $(function(){
 			return true;
 		});
 
-		var m = window.location.pathname.match(/\/\w+\/(res|arch)\/([0-9\+]+)\.html/);
+		var m = window.location.pathname.match(/\/\w+\/(res|arch)\/([0-9\+]+)\.html/),
+			obj;
 		curThread = parseInt(m[2]);
 
-		applyStats({twBaseStats: {}, twBaseThread: 1});
+		
+		if(localStorage.twSawedState){
+			obj = JSON.parse(localStorage.twSawedState);
+			if(obj.twBaseThread < curThread)
+				applyStats(obj);		
+		}else{
+			applyStats({twBaseStats: {}, twBaseThread: 1});	
+		}		
 		genSaveState();
 
 		$('body').append('<div id="tripwars"><span id="twCollapser"><i class="fa fa-minus-square"></i></span> <span id="twConf"><i class="fa fa-cog"></i></span> <span id="twHideAway"><i class="fa fa-eye"></i></span><span id="twSyncStatus"></span><span id="odometer" style="float: right;"></span><div id="twContent" class="twHideAway"></div><div id="twConfig"><h1>TripWars v'+(typeof GM_info !== 'undefined' ? GM_info.script.version : GM_getMetadata("version"))+'</h1><br><p style="text-align: center;">Хеш статов: <strong id="twHash"></strong><br><br><button id="twSaveStats" style="float: left;"><i class="fa fa-download"></i> Скачать файл статсов</button><button id="twUploadStats" style="float: right;"><i class="fa fa-upload"></i> Загрузить файл статсов</button><input type="file" id="twUploadStatsInput" style="display: none;"><br></p><hr><h3 style="text-align: center;">Мой трипкод:</h3><p style="text-align: center;"><input id="twMyTripCode" type="text"/></p><hr><h3 style="text-align: center;">Генератор ОП-пика со статами</h3><p style="text-align: center;"><button id="twOpPicGen"><i class="fa fa-picture-o"></i> склеить ОП-пик</button></p><hr><h3 style="text-align: center;">Бездна Анального Огораживания</h3><p style="text-align: center;"><label><input type="checkbox" id="twHideAnons"> анонимы - не люди</label><br><label>Я на хую вертел тех, у кого энергии меньше <input type="number" id="twHideEnergy" value="0" style="width: 50px;"></label><h1><label><input type="checkbox" id="twNeBombit"> ДА НЕ БОМБИТ У МЕНЯ! НЕ БОМБИТ!</label></h1><br></p></div><input id="twOpenOpPic" type="file" style="display: none;"/></div>');
@@ -150,7 +158,7 @@ $(function(){
 
 		$('#twSaveStats').on('click', function(){
 			var zip = new JSZip();
-
+			genSaveState();
 			zip.file("TripWars-" +baseThread + "-" + savedStateHash +".json", strToUTF8Arr(savedState));
 			saveAs(zip.generate({type:"blob", compression: "DEFLATE"}), "TripWars-" +baseThread + "-" + savedStateHash +".zip");
 		});
@@ -251,11 +259,13 @@ $(function(){
 				var ci = cleanImage(new Uint8Array(ab));
 				if(!ci){$('#twSyncStatus').append('<strong style="color: red;"> Нет синхры в ОП-пике!</strong>');console.log('OP-pic parse fail.'); return false;}
 
-				var zip = JSZip(ci[1]);
-				var files = zip.file(/^tripwars.+\.json$/i);
+				var zip = JSZip(ci[1]),
+					files = zip.file(/^tripwars.+\.json$/i),
+					obj, hsh;
 
 				if(files.length > 0){
-					var obj = JSON.parse(utf8ArrToStr(files[0].asUint8Array()));
+					obj = JSON.parse(utf8ArrToStr(files[0].asUint8Array()));
+					hsh = hashStats(obj.twBaseThread, obj.twBaseStats).match(/[0-9-a-f]{4}/ig).join('-') + '['+obj.twBaseThread+']';
 					
 					applyStats(obj);
 					tgPostHits = {};
@@ -263,8 +273,11 @@ $(function(){
 
 					$('.twParsed').removeClass('twParsed');
 					parseTripGame('stats loader from OP-pic');
-					console.log('OP parsed');
-					$('#twSyncStatus').append('<strong style="color: #0a0;"> ОП-sync</strong>');
+					
+					console.log('OP parsed: ' + hsh);
+					$('#twSyncStatus').append('<strong style="color: #0a0;" title="'+hsh+'"> ОП-sync</strong>');
+					$('form div.post.op .intro').after('<em style="color: #0a0;">Хеш ОП-статов: '+hsh+'</em>');
+
 				}else{
 					$('#twSyncStatus').append('<strong style="color: red;"> Нет синхры в ОП-пике!</strong>');
 				}
