@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SynchImgRepost
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.4
+// @version      0.0.5
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -12,8 +12,39 @@
 // @run-at       document-end
 // ==/UserScript==
 
+
+var m = window.location.pathname.match(/^\/(\w+)\//)
+	brd = '';
+if(m) brd = m[1];
+
+// div.body a[href$="#2371795"]:after
+function markOwnPost(id){
+	var ids = [];
+
+	if(localStorage['sirMyPosts_'+brd]){
+		ids = JSON.parse(localStorage['sirMyPosts_'+brd]);
+	}
+
+	if(id){
+		ids.push(id);
+		if(ids.length > 1000) ids.unshift();
+		localStorage['sirMyPosts_'+brd] = JSON.stringify(ids);
+	}
+
+	var styles = [], styleAfter = [];
+
+	for (var i = 0; i < ids.length; i++) {
+		styles.push('div.post a[href$="#'+ids[i]+'"]');
+		styleAfter.push('div.post a[href$="#'+ids[i]+'"]:after');
+	}
+	$('head #sirMyPosts').remove();
+	$('head').append('<style type="text/css" id="sirMyPosts">'+styles.join(', ')+'{font-weight: bold}'+styleAfter.join(', ')+'{content: " (You)"}</style>');
+}
+
 $(window).ready(function() {
 	var multiFiles, selectedFile, multiPos = 0, curFileLoaded, curFileData;
+
+	markOwnPost();
 
 	if (settings.ajax) {
 
@@ -58,7 +89,6 @@ $(window).ready(function() {
 			}else{
 				loadNextImg();
 			}
-			console.log(multiFiles);
 		}
 		$('body').append('<input id="saMultiFile" type="file" style="display: none;" multiple />');
 		$('input#saMultiFile').off('change').on('change', fileMultiCatcher);
@@ -255,6 +285,7 @@ $(window).ready(function() {
 									submitBtn.removeAttr('disabled');
 								}
 							} else if (post_response.redirect && post_response.id) {
+								markOwnPost(post_response.id);
 								if (!$(form).find('input[name="thread"]').length) {
 									document.location = post_response.redirect;
 									stats.threads.created++;
