@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ThreadShotMaker
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.2
+// @version      0.0.3
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -80,7 +80,7 @@ function doPhoto(e){
 
 	for (i = 0; i < rows; i++) {
 		for (j = 0; j < 10; j++) {
-			a = j + 12 * i;
+			a = j + 10 * i;
 			if(a >= trips.length) continue;
 			
 			ctx.textBaseline = 'middle';
@@ -105,8 +105,10 @@ function doPhoto(e){
 	ctx.fillStyle = 'black';
 	ctx.fillText($('div.post.op .intro span.subject').text(), 1202, 720);
 
-	$('#psCanvasPlace').empty().append(example);
-	$('#psCanvasPlace canvas').attr('download', 'threadshot-'+curThread+'.png');
+	$('#psCanvasPlace').empty().append(example)
+		.append('<a href="javascrip:;">remove</a>');
+	
+	$('#psCanvasPlace a').on('click', function(){$('#psCanvasPlace').empty()});
 
 	return false;
 }
