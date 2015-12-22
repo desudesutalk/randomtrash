@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ThreadShotMaker
 // @namespace    udp://SynchTripWars/*
-// @version      0.0.1
+// @version      0.0.2
 // @description  post something useful
 // @include      *://*syn-ch.com/*
 // @include      *://*syn-ch.org/*
@@ -79,7 +79,7 @@ function doPhoto(e){
 	ctx.drawImage(hdrimg, 0, 0);
 
 	for (i = 0; i < rows; i++) {
-		for (j = 0; j < 12; j++) {
+		for (j = 0; j < 10; j++) {
 			a = j + 12 * i;
 			if(a >= trips.length) continue;
 			
