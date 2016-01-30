@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NanoShakal
 // @namespace    udp://nanoboard/
-// @version      0.1
+// @version      0.0.2
 // @description  Try to take over the world!
 // @author       boku
 // @updateURL    https://github.com/desudesutalk/randomtrash/raw/master/ns/ns.user.js
@@ -683,13 +683,14 @@ Zepto(function($){
 		console.time('Processed in');
 		var files = $('input#imgfile')[0].files;
 
-		if (files[0] && files[0].type.match('image.*')) {
+		if (files[0]) {
 			var reader = new FileReader();
 
 			reader.onload = (function(theFile) {
 				return function(e) {
-						if(e.target.result.length <= maxSize + 23){
-							$('textarea').val($('textarea').val() + '[img='+e.target.result.split(',')[1]+']');
+						result = e.target.result.split(',')[1];
+						if(result.length * bitsPerchar / 8 <= maxSize + 23){
+							$('textarea').val($('textarea').val() + '[img='+result+']');
 							result = '';
 							$('#previewdiv').empty();
 							$('input#imgfile').val(null);
