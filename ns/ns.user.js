@@ -692,6 +692,7 @@ Zepto(function($){
 							$('textarea').val($('textarea').val() + '[img='+e.target.result.split(',')[1]+']');
 							result = '';
 							$('#previewdiv').empty();
+							$('input#imgfile').val(null);
 							return true;
 						}
 						img = document.createElement('img');
@@ -711,11 +712,12 @@ Zepto(function($){
 		}else{
 			result = '';
 			$('#previewdiv').empty();
+			$('input#imgfile').val(null);
 		}
 	}
 
 	if(/^\/reply\//.test(document.location.pathname)){
-		$('#sendbtn').parent().append('<div style="display: block; float: right; margin-left: 20px;"><button id="imgopen">Пришакалить картинку</button><input type="file" style="display: none;" id="imgfile">'
+		$('#sendbtn').parent().prepend('<div style="display: block; float: right; margin-left: 20px;"><button id="imgopen">Пришакалить картинку</button><input type="file" style="display: none;" id="imgfile">'
 			+ '<br>Какчестов: <input id="imgq" type="range" min="0" max="100" step="1" value="50" style="width: 100px;"> <span id="qtxt">50</span>'
 			+ '<br>Коликчество: <input id="imgs" type="range" min="0" max="16384" step="256" value="16384" style="width: 100px;"> <span id="stxt">16384</span><br>'
 			+ (doWebp ? '<label>WebP <input type="checkbox" value="webp" id="do_webp" checked></label><br>': '')
@@ -734,6 +736,7 @@ Zepto(function($){
 			$('textarea').val($('textarea').val() + '[img='+result+']');
 			result = '';
 			$('#previewdiv').empty();
+			$('input#imgfile').val(null);
 		});
 	}
 });
