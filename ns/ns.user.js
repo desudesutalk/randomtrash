@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NanoShakal
 // @namespace    udp://nanoboard/
-// @version      0.0.3
+// @version      0.0.4
 // @description  Try to take over the world!
 // @author       boku
 // @updateURL    https://github.com/desudesutalk/randomtrash/raw/master/ns/ns.user.js
@@ -716,7 +716,7 @@ Zepto(function($){
 	}
 
 	if(/^\/reply\//.test(document.location.pathname)){
-		$('#sendbtn').parent().prepend('<div style="display: block; float: right; margin-left: 20px;"><button id="imgopen">Пришакалить картинку</button><input type="file" style="display: none;" id="imgfile">'
+		$('#sendbtn').parent().prepend('<div style="display: block; float: right; margin-left: 20px;"><strong>Пришакалить картинку:</strong>&nbsp;<input type="file" id="imgfile">'
 			+ '<br>Какчество: <input id="imgq" type="range" min="0" max="100" step="1" value="50" style="width: 200px;"> <span id="qtxt">50</span>'
 			+ '<br>Коликчество: <input id="imgs" type="range" min="128" max="32768" step="128" value="16384" style="width: 200px;"> <span id="stxt">16384</span><br>'
 			+ (doWebp ? '<label>WebP <input type="checkbox" value="webp" id="do_webp" checked></label><br>': '')
@@ -725,7 +725,6 @@ Zepto(function($){
 		$('input#imgq').on('input', function(){$('span#qtxt').text($('input#imgq').val())});
 		$('input#imgs').on('input', function(){$('span#stxt').text($('input#imgs').val())});
 
-		$('button#imgopen').on('click', function(){$('input#imgfile').click()});
 		$('input#imgfile').on('change', handleContainerSelect);
 
 		$('input#imgs, input#imgq, input#do_webp').on('change', handleContainerSelect);
@@ -756,7 +755,7 @@ Zepto(function($){
 		if(type == 'N3q8' || type == 'UmFy' || type == 'UEsD'){
 			data = this.src.split(',')[1];
 			if(!/^[\/A-z0-9+=]+$/.test(data)) return true;
-			el = $('<span style="white-space: nowrap;"><img src="data:image/png;base64,'+attIco+'">&nbsp;<a href="data:application/octet-stream;base64,'+ data +'">attachment.'+{'N3q8':'7z','UmFy':'rar','UEsD':'zip'}[type]+'</a></span>');
+			el = $('<span style="white-space: nowrap;"><img src="data:image/png;base64,'+attIco+'"><a href="data:application/octet-stream;base64,'+ data +'">attachment.'+{'N3q8':'7z','UmFy':'rar','UEsD':'zip'}[type]+'</a></span>');
 			el.on('click', saveAtt);
 			$(this).replaceWith(el);
 		}
