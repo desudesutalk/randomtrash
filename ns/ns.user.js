@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NanoShakal
 // @namespace    udp://nanoboard/
-// @version      0.0.4
+// @version      0.0.5
 // @description  Try to take over the world!
 // @author       boku
 // @updateURL    https://github.com/desudesutalk/randomtrash/raw/master/ns/ns.user.js
@@ -718,7 +718,7 @@ Zepto(function($){
 	if(/^\/reply\//.test(document.location.pathname)){
 		$('#sendbtn').parent().prepend('<div style="display: block; float: right; margin-left: 20px;"><strong>Пришакалить картинку:</strong>&nbsp;<input type="file" id="imgfile">'
 			+ '<br>Какчество: <input id="imgq" type="range" min="0" max="100" step="1" value="50" style="width: 200px;"> <span id="qtxt">50</span>'
-			+ '<br>Коликчество: <input id="imgs" type="range" min="128" max="32768" step="128" value="16384" style="width: 200px;"> <span id="stxt">16384</span><br>'
+			+ '<br>Коликчество: <input id="imgs" type="range" min="128" max="64512" step="128" value="16384" style="width: 200px;"> <span id="stxt">16384</span><br>'
 			+ (doWebp ? '<label>WebP <input type="checkbox" value="webp" id="do_webp" checked></label><br>': '')
 			+ '<div id="previewdiv"></div></div>');
 
