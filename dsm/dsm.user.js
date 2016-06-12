@@ -2,7 +2,7 @@
 // @name        dodometer
 // @namespace   udp://desushelter/
 // @include     *://dva-ch.net/*/*
-// @version     4
+// @version     5
 // @grant       none
 // @updateURL   https://github.com/desudesutalk/randomtrash/raw/master/dsm/dsm.user.js
 // @copyright   2015+, me
@@ -33,7 +33,8 @@ function nextGet(n) {
 		parseInt((first2 + nn[0]).substring(0, cur.length)));
 
 	for (i = 0; i < nn.length; i++) {
-		gets.push(parseInt((first + nn[i]).substring(0, cur.length)));
+		gets.push(parseInt((first + nn[i]).substring(0, cur.length)),
+			parseInt((first +i+'000000000').substring(0, cur.length)));
 	}
 	gets.sort(function(a, b) {
 		return a - b; });
