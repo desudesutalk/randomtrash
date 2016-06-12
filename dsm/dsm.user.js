@@ -2,9 +2,14 @@
 // @name        dodometer
 // @namespace   udp://desushelter/
 // @include     *://dva-ch.net/*/*
-// @version     1
+// @version     2
 // @grant       none
+// @updateURL   https://github.com/desudesutalk/randomtrash/raw/master/dsm/dsm.user.js
+// @copyright   2015+, me
+// @run-at      document-end
 // ==/UserScript==
+
+
 function str2date(dateStr) {
 	var s, months = ['NULLYABR', 'янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
 	m = dateStr.toLowerCase().match(/\S+\s+(\S+)\s(\d+)\s(\d+):(\d+):(\d+)\s(\d+)/);
