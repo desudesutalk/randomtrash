@@ -2,7 +2,7 @@
 // @name        dodometer
 // @namespace   udp://desushelter/
 // @include     *://dva-ch.net/*/*
-// @version     2
+// @version     3
 // @grant       none
 // @updateURL   https://github.com/desudesutalk/randomtrash/raw/master/dsm/dsm.user.js
 // @copyright   2015+, me
@@ -91,7 +91,7 @@ function odometer() {
 
 		return {
 			speed: Math.floor(qhNum / (lastTime - qhTime) * 1000 * 60 * 60),
-			timePerPost: (lastTime - qhTime) / qhNum,
+			timePerPost: (lastTime - qhTime) / (lastPost - qhPost),
 			percent: Math.floor(qhNum / (1 + lastPost - qhPost) * 100),
 			secondsToBL: secToBL,
 			timeToBL: timeToBL,
