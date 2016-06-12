@@ -2,7 +2,7 @@
 // @name        dodometer
 // @namespace   udp://desushelter/
 // @include     *://dva-ch.net/*/*
-// @version     3
+// @version     4
 // @grant       none
 // @updateURL   https://github.com/desudesutalk/randomtrash/raw/master/dsm/dsm.user.js
 // @copyright   2015+, me
@@ -26,11 +26,11 @@ function nextGet(n) {
 		gets = [],
 		i;
 	n = parseInt(n);
-	gets.push(n);
-
-	gets.push(parseInt(all.substring(0, cur.length)));
-	gets.push(parseInt(all.substring(0, cur.length + 1)));
-	gets.push(parseInt((first2 + nn[0]).substring(0, cur.length)));
+	gets.push(n,
+		parseInt(Array(10).join(first2).substring(0, cur.length)),
+		parseInt(all.substring(0, cur.length)),
+		parseInt(all.substring(0, cur.length + 1)),
+		parseInt((first2 + nn[0]).substring(0, cur.length)));
 
 	for (i = 0; i < nn.length; i++) {
 		gets.push(parseInt((first + nn[i]).substring(0, cur.length)));
