@@ -2,18 +2,22 @@
 // @name        dodometer
 // @namespace   udp://desushelter/
 // @include     *://dva-ch.net/*/*
-// @version     5
+// @version     7
 // @grant       none
 // @updateURL   https://github.com/desudesutalk/randomtrash/raw/master/dsm/dsm.user.js
 // @copyright   2015+, me
 // @run-at      document-end
 // ==/UserScript==
 
-
+function add0(n){
+	n=parseInt(n);
+	if(n < 10) return '0'+n;
+	else return n;
+}
 function str2date(dateStr) {
-	var s, months = ['NULLYABR', 'янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+	var s, months = ['NULLUABR', 'янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
 	m = dateStr.toLowerCase().match(/\S+\s+(\S+)\s(\d+)\s(\d+):(\d+):(\d+)\s(\d+)/);
-	s = m[6] + '-' + months.indexOf(m[1]) + '-' + m[2] + ' ' + m[3] + ':' + m[4] + ':' + m[5];
+	s = m[6] + '-' + add0(months.indexOf(m[1])) + '-' + add0(m[2]) + 'T' + add0(m[3]) + ':' + add0(m[4]) + ':' + add0(m[5])+'Z';
 	return new Date(s);
 }
 
@@ -34,10 +38,13 @@ function nextGet(n) {
 
 	for (i = 0; i < nn.length; i++) {
 		gets.push(parseInt((first + nn[i]).substring(0, cur.length)),
-			parseInt((first +i+'000000000').substring(0, cur.length)));
+			parseInt((first +i+'000000000').substring(0, cur.length)),
+			parseInt((i+'000000000').substring(0, cur.length)),
+			parseInt((i+'000000000').substring(0, cur.length+1)));
 	}
-	gets.sort(function(a, b) {
-		return a - b; });
+	gets = gets.sort(function(a, b){return a - b;})
+		.filter(function(item, pos, ary){return !pos || item != ary[pos - 1];});
+
 	return gets[gets.indexOf(n) + 1];
 }
 
@@ -78,7 +85,7 @@ function odometer() {
 
 	if (posts.length > 1) {
 		lastPost = parseInt(posts[posts.length - 1].id.replace('reply_', ''));
-		lastTime = (new Date()).getTime();
+		lastTime = lastTime = str2date(posts[posts.length - 1].querySelector('span.posttime').textContent).getTime();
 
 		for (i = posts.length - 1; i >= 0; i--) {
 			qhPost = parseInt(posts[i].id.replace(/[^0-9]/g, ''));
